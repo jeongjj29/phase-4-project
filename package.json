@@ -1,5 +1,9 @@
 {
   "devDependencies": {
     "@types/react-router-dom": "^5.3.3"
+  },
+  "dependencies": {
+    "formik": "^2.4.6",
+    "yup": "^1.4.0"
   }
 }
