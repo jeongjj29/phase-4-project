@@ -23,6 +23,12 @@ class Store(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f"<Store {self.name}>"
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name
+        }
 
 class ItemPrice(db.Model, SerializerMixin):
     __tablename__ = "item_prices"
