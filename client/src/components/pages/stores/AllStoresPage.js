@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import RecentlyAddedStoresBlock from './blocks/RecentlyAddedStoresBlock.js';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const AllStoresPage = () => {
   const [stores, setStores] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/stores') 
-      .then(response => response.json())      
-      .then(data => setStores(data))          
-      .catch(error => console.error('Error fetching stores:', error));
-  }, []); 
+    fetch("http://localhost:3001/api/stores")
+      .then((response) => response.json())
+      .then((data) => setStores(data))
+      .catch((error) => console.error("Error fetching stores:", error));
+  }, []);
 
   return (
     <div>
@@ -19,7 +18,7 @@ const AllStoresPage = () => {
 
       <ul>
         {stores.length > 0 ? (
-          stores.map(store => (
+          stores.map((store) => (
             <li key={store.id}>
               <Link to={`/stores/${store.id}`}>{store.name}</Link>
             </li>
@@ -28,7 +27,6 @@ const AllStoresPage = () => {
           <li>No stores available</li>
         )}
       </ul>
-      <RecentlyAddedStoresBlock />
     </div>
   );
 };
