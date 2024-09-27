@@ -1,47 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // Import the Link component
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const AllItemPricesPage = () => {
-  const [itemPrices, setItemPrices] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/api/item_prices')
-      .then((response) => {
-        setItemPrices(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching item prices:', error);
-      });
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/item_prices');
+        setOrders(response.data);
+      } catch (err) {
+        setError('Error fetching orders');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
   }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div>
-      <h1>All Item Prices</h1>
+      <h1>Orders</h1>
       <table>
         <thead>
           <tr>
-            <th>View Purchase</th>
-            <th>Item</th>
+            <th>Order</th>
             <th>Store</th>
-            <th>Price</th>
             <th>Created At</th>
+            <th>Items</th>
           </tr>
         </thead>
         <tbody>
-          {itemPrices.map(itemPrice => (
-            <tr key={itemPrice.id}>
+          {orders.map((order, index) => (
+            <tr key={index}>
               <td>
-                <Link to={`/item-prices/${itemPrice.id}`}>View Purchase</Link>
+                <Link to={`/orders/${index}`}>View Order</Link>
               </td>
+              <td><Link to={`/stores/${order.store.id}`}>{order.store.name}</Link></td>
+              <td>{new Date(order.created_at).toLocaleDateString()}</td>
               <td>
-                <Link to={`/items/${itemPrice.item.id}`}>{itemPrice.item.name}</Link>
+                <ul>
+                  {order.items.map((item) => (
+                    <li key={item.id}>
+                     <Link to={`/items/${item.id}`}> {item.item_name}</Link> - ${item.price.toFixed(2)}
+                    </li>
+                  ))}
+                </ul>
               </td>
-              <td>
-                <Link to={`/stores/${itemPrice.store.id}`}>{itemPrice.store.name}</Link>
-              </td>
-              <td>${itemPrice.price.toFixed(2)}</td>
-              <td>{new Date(itemPrice.created_at).toLocaleDateString()}</td>
             </tr>
           ))}
         </tbody>

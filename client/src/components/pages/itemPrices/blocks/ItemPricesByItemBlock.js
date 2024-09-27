@@ -41,7 +41,7 @@ const ItemPricesByItemBlock = ({ item_id }) => {
             <tr key={price.id}>
               <td>${price.price}</td>
               <td>
-                <Link to={`/stores/${price.store.id}`}>{price.store.name}</Link> {/* Link to store */}
+                <Link to={`/stores/${price.store.id}`}>{price.store.name}</Link>
               </td>
               <td>{price.created_at}</td>
             </tr>
