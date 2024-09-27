@@ -26,7 +26,6 @@ const AllItemPricesPage = () => {
             <th>Store</th>
             <th>Price</th>
             <th>Created At</th>
-            <th>Updated At</th>
           </tr>
         </thead>
         <tbody>
@@ -43,7 +42,6 @@ const AllItemPricesPage = () => {
               </td>
               <td>${itemPrice.price.toFixed(2)}</td>
               <td>{new Date(itemPrice.created_at).toLocaleDateString()}</td>
-              <td>{new Date(itemPrice.updated_at).toLocaleDateString()}</td>
             </tr>
           ))}
         </tbody>

@@ -8,7 +8,6 @@ class Item(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
 
-    # Use back_populates instead of backref
     item_prices = db.relationship("ItemPrice", back_populates="item", cascade="all, delete")
 
     serialize_rules = ('-item_prices',)
@@ -58,7 +57,7 @@ class ItemPrice(db.Model, SerializerMixin):
 
     @classmethod
     def get_all_item_prices(cls):
-        item_prices = cls.query.all()
+        item_prices = cls.query.order_by(cls.created_at.desc()).all()
         return [{
             'id': ip.id,
             'price': ip.price,
@@ -73,9 +72,10 @@ class ItemPrice(db.Model, SerializerMixin):
                 'name': ip.item.name
             }
         } for ip in item_prices]
+
     @classmethod
     def get_item_prices_with_details(cls):
-        item_prices = cls.query.all()
+        item_prices = cls.query.order_by(cls.created_at.desc()).all()
         return [{
             'id': ip.id,
             'price': ip.price,
@@ -93,7 +93,7 @@ class ItemPrice(db.Model, SerializerMixin):
 
     @classmethod
     def get_item_prices_by_item_id(cls, item_id):
-        item_prices = cls.query.filter_by(item_id=item_id).all()
+        item_prices = cls.query.filter_by(item_id=item_id).order_by(cls.created_at.desc()).all()  # Sort by created_at
         return [{
             'id': ip.id,
             'price': ip.price,
