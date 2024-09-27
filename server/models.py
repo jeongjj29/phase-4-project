@@ -23,15 +23,7 @@ class Item(db.Model, SerializerMixin):
         return f"<Item {self.name}>"
 
     def to_dict(self):
-<<<<<<< HEAD
-        return {"id": self.id, "name": self.name}
-=======
-        return {
-            'id': self.id,
-            'name': self.name,
-            'image_url': self.image_url 
-        }
->>>>>>> refs/remotes/origin/main
+        return {"id": self.id, "name": self.name, "image_url": self.image_url}
 
 
 class Store(db.Model, SerializerMixin):

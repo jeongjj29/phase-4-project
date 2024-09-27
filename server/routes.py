@@ -221,7 +221,12 @@ def get_store_items(id):
 @api_bp.route("/api/stores/<int:id>/purchases", methods=["GET"])
 def get_store_purchases(id):
     store = Store.query.get_or_404(id)
-    return jsonify([item_price.to_dict() for item_price in store.item_prices])
+    return jsonify(
+        [
+            item_price.to_dict(rules=("-store", "-store_id", "-item_id", "-updated_at"))
+            for item_price in store.item_prices
+        ]
+    )
 
 
 @api_bp.route("/api/items/<int:id>/stores", methods=["GET"])
