@@ -121,6 +121,27 @@ def get_top5_stores():
     return jsonify(top5_stores_dict)
 
 
+@api_bp.route("/api/items/top5", methods=["GET"])
+def get_top5_items():
+    top5_items = (
+        db.session.query(
+            Item.id, Item.name, func.count(ItemPrice.id).label("item_price_count")
+        )
+        .join(ItemPrice)
+        .group_by(Item.id)
+        .order_by(func.count(ItemPrice.id).desc())
+        .limit(5)
+        .all()
+    )
+
+    top5_items_dict = [
+        {"id": item.id, "name": item.name, "item_price_count": item.item_price_count}
+        for item in top5_items
+    ]
+
+    return jsonify(top5_items_dict)
+
+
 from config import app
 
 app.register_blueprint(api_bp)
