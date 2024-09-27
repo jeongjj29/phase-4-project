@@ -13,6 +13,12 @@ class Item(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<Item {self.name}>"
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name
+        }
+
 class Store(db.Model, SerializerMixin):
     __tablename__ = "stores"
 
