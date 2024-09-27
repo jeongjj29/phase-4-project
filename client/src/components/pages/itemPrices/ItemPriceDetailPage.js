@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import ItemPricesByItemBlock from './blocks/ItemPricesByItemBlock.js';
 
 const ItemPriceDetailPage = () => {
@@ -17,10 +17,9 @@ const ItemPriceDetailPage = () => {
 
   return (
     <div>
-      <h1>Item Price: {itemPrice.price}</h1>
-      <p>Item ID: {itemPrice.item_id}</p>
-      <p>Store ID: {itemPrice.store_id}</p>
-      <p>Price: ${itemPrice.price}</p>
+      <h1>{itemPrice.item.name}</h1>
+      <h1>{itemPrice.price}</h1>
+      <p>Store:  <Link to={`/stores/${itemPrice.store.id}`}>{itemPrice.store.name}</Link></p>
       <ItemPricesByItemBlock item_id={itemPrice.item_id} />
     </div>
   );

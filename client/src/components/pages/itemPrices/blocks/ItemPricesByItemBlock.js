@@ -27,7 +27,7 @@ const ItemPricesByItem = ({ item_id }) => {
 
   return (
     <div>
-      <h3>Purchases for Item ID: {item_id}</h3>
+      <h3>Purchases</h3>
       <table>
         <thead>
           <tr>
