@@ -51,5 +51,18 @@ def create_item():
 
     return jsonify(new_item.to_dict()), 201
 
+@api_bp.route('/api/item_prices', methods=['GET'])
+def get_all_item_prices():
+    item_prices = ItemPrice.query.all()
+    return jsonify([{
+        'id': ip.id,
+        'price': ip.price,
+        'store': ip.store.name,
+        'item': ip.item.name,
+        'created_at': ip.created_at,
+        'updated_at': ip.updated_at
+    } for ip in item_prices])
+
+
 from config import app
 app.register_blueprint(api_bp)
