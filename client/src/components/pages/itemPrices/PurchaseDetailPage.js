@@ -1,15 +1,9 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-=======
-import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import axios from 'axios';
->>>>>>> refs/remotes/origin/main
 
 const PurchaseDetailPage = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const [purchase, setPurchase] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -50,7 +44,11 @@ const PurchaseDetailPage = () => {
       <h1>Purchase: {purchase.item.name}</h1>
       {purchase && (
         <div>
-          <p><Link to={`/stores/${purchase.store.id}`}>{purchase.store.name}</Link></p>
+          <p>
+            <Link to={`/stores/${purchase.store.id}`}>
+              {purchase.store.name}
+            </Link>
+          </p>
           <p>Price: ${purchase.price.toFixed(2)}</p>
           <p>Created At: {new Date(purchase.created_at).toLocaleString()}</p>
           <p>Store: {purchase.store.name}</p>
