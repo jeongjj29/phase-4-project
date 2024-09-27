@@ -15,9 +15,13 @@ import AllItemsPage from './components/pages/items/AllItemsPage.js';
 import CreateItemPage from './components/pages/items/CreateItemPage.js';
 import ItemDetailPage from './components/pages/items/ItemDetailPage.js';
 
-import AllItemPricesPage from './components/pages/itemPrices/AllItemPricesPage.js';
+import AllItemPricesPage from './components/pages/itemPrices/AllPurchasesPage.js';
 import CreateItemPricePage from './components/pages/itemPrices/CreateItemPricePage.js';
-import ItemPriceDetailPage from './components/pages/itemPrices/ItemPriceDetailPage.js';
+import AllPurchasesPage from './components/pages/itemPrices/AllPurchasesPage.js';
+import PurchaseDetailPage from './components/pages/itemPrices/PurchaseDetailPage.js';
+
+import OrderDetailPage from './components/pages/itemPrices/OrderDetailPage.js';
+import AllOrdersPage from './components/pages/itemPrices/AllOrdersPage.js';
 
 function App() {
   return (
@@ -38,9 +42,13 @@ function App() {
             <Route path="/create-item" element={<CreateItemPage />} />
             <Route path="/items/:id" element={<ItemDetailPage />} />
 
-            <Route path="/item-prices" element={<AllItemPricesPage />} />
+            <Route path="/orders" element={<AllOrdersPage />} />
+            <Route path="/order" element={<OrderDetailPage />} />
+
+            <Route path="/purchases/:id" element={<PurchaseDetailPage />} />
+            <Route path="/purchases" element={<AllPurchasesPage />} />
+            
             <Route path="/create-item-price" element={<CreateItemPricePage />} />
-            <Route path="/item-prices/:id" element={<ItemPriceDetailPage />} />
 
             <Route path="*" element={<PageNotFound />} />
           </Routes>

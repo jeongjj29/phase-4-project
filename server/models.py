@@ -41,7 +41,6 @@ class Store(db.Model, SerializerMixin):
             'name': self.name
         }
 
-
 class ItemPrice(db.Model, SerializerMixin):
     __tablename__ = "item_prices"
 

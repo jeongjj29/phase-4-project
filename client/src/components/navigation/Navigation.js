@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Menu, MenuItem } from '@mui/material';
-import HomeIcon from '@mui/icons-material/Home';
-import InfoIcon from '@mui/icons-material/Info';
-import StorefrontIcon from '@mui/icons-material/Storefront';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import AddIcon from '@mui/icons-material/Add';
 import MenuIcon from '@mui/icons-material/Menu';
 const Navigation = () => {
@@ -42,7 +37,7 @@ const Navigation = () => {
           >
             <MenuItem onClick={handleCloseMainMenu}>
               <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-                <HomeIcon /> Home
+                Home
               </Link>
             </MenuItem>
             <MenuItem onClick={handleCloseMainMenu}>
@@ -52,7 +47,7 @@ const Navigation = () => {
             </MenuItem>
             <MenuItem onClick={handleCloseMainMenu}>
               <Link to="/contact" style={{ textDecoration: 'none', color: 'inherit' }}>
-                <InfoIcon /> Contact
+                Contact
               </Link>
             </MenuItem>
           </Menu>
@@ -60,20 +55,24 @@ const Navigation = () => {
 
         <li>
           <Link to="/stores">
-            <StorefrontIcon /> Stores
+            Stores
           </Link>
         </li>
         <li>
           <Link to="/items">
-            <ViewModuleIcon /> Items
+            Items
           </Link>
         </li>
         <li>
-          <Link to="/item-prices">
-            <ReceiptLongIcon /> Purchases
+          <Link to="/purchases">
+            Purchases
           </Link>
         </li>
-
+        <li>
+          <Link to="/orders">
+            Orders
+          </Link>
+        </li>
         <li>
           <Button onClick={handleAddMenuClick} variant="text">
             <AddIcon /> Add
@@ -85,17 +84,17 @@ const Navigation = () => {
           >
             <MenuItem onClick={handleCloseAddMenu}>
               <Link to="/create-store" style={{ textDecoration: 'none', color: 'inherit' }}>
-                Create Store
+                Store
               </Link>
             </MenuItem>
             <MenuItem onClick={handleCloseAddMenu}>
               <Link to="/create-item" style={{ textDecoration: 'none', color: 'inherit' }}>
-                Create Item
+                Item
               </Link>
             </MenuItem>
             <MenuItem onClick={handleCloseAddMenu}>
               <Link to="/create-item-price" style={{ textDecoration: 'none', color: 'inherit' }}>
-                Create Item Price
+                Purchase
               </Link>
             </MenuItem>
           </Menu>
