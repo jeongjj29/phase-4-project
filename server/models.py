@@ -9,6 +9,7 @@ class Item(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
+    image_url = db.Column(db.String, nullable=True)
 
     item_prices = db.relationship(
         "ItemPrice", back_populates="item", cascade="all, delete"
@@ -22,7 +23,15 @@ class Item(db.Model, SerializerMixin):
         return f"<Item {self.name}>"
 
     def to_dict(self):
+<<<<<<< HEAD
         return {"id": self.id, "name": self.name}
+=======
+        return {
+            'id': self.id,
+            'name': self.name,
+            'image_url': self.image_url 
+        }
+>>>>>>> refs/remotes/origin/main
 
 
 class Store(db.Model, SerializerMixin):
