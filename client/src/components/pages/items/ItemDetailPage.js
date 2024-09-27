@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import PurchasesByItemBlock from './blocks/PurchasesByItemBlock';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import ItemPricesByItem from "../../blocks/ItemPricesByItem.js";
 
 const ItemDetailPage = () => {
   const { id } = useParams();
@@ -8,9 +8,9 @@ const ItemDetailPage = () => {
 
   useEffect(() => {
     fetch(`http://localhost:3001/api/items/${id}`)
-      .then(response => response.json())
-      .then(data => setItem(data))
-      .catch(err => console.error('Error fetching item:', err));
+      .then((response) => response.json())
+      .then((data) => setItem(data))
+      .catch((err) => console.error("Error fetching item:", err));
   }, [id]);
 
   if (!item) return <p>Loading...</p>;
@@ -19,7 +19,7 @@ const ItemDetailPage = () => {
     <div>
       <h1>Item: {item.name}</h1>
       <p>Item ID: {item.id}</p>
-      <PurchasesByItemBlock />
+      <ItemPricesByItem item_id={item.id} />
     </div>
   );
 };

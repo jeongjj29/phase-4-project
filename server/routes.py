@@ -173,6 +173,35 @@ def get_most_recent_item_prices():
     return jsonify(recent_item_prices_dict)
 
 
+@api_bp.route("/api/items/<int:id>/item_prices", methods=["GET"])
+def get_item_prices_by_item_id(id):
+    item_prices = (
+        db.session.query(
+            ItemPrice.id,
+            ItemPrice.price,
+            ItemPrice.created_at,
+            ItemPrice.item_id,
+            Store.name.label("store_name"),
+        )
+        .filter_by(item_id=id)
+        .join(Store, ItemPrice.store_id == Store.id)
+        .order_by(ItemPrice.created_at.desc())
+        .all()
+    )
+
+    item_prices_dict = [
+        {
+            "id": item_price.id,
+            "price": item_price.price,
+            "created_at": item_price.created_at.strftime("%m/%d/%Y"),
+            "store_name": item_price.store_name,
+        }
+        for item_price in item_prices
+    ]
+
+    return jsonify(item_prices_dict)
+
+
 from config import app
 
 app.register_blueprint(api_bp)

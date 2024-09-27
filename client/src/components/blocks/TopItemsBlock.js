@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 
 const TopItemsBlock = () => {
@@ -19,8 +20,12 @@ const TopItemsBlock = () => {
     <div>
       <h2>Top 5 Items</h2>
       <ul>
-        {items.map((store) => {
-          return <li key={store.id}>{store.name}</li>;
+        {items.map((item) => {
+          return (
+            <li key={item.id}>
+              <Link to={`/items/${item.id}`}>{item.name}</Link>
+            </li>
+          );
         })}
       </ul>
     </div>
