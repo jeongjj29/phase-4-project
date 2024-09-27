@@ -3,7 +3,6 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 
-// Validation schema
 const StoreSchema = Yup.object().shape({
   name: Yup.string()
     .min(3, "Name must be at least 3 characters long")
@@ -19,7 +18,7 @@ const CreateStoreForm = () => {
         validationSchema={StoreSchema}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           axios
-            .post("/api/stores", values)
+            .post("http://localhost:3001/api/stores/create", values)
             .then((response) => {
               console.log("Store created:", response.data);
               resetForm();

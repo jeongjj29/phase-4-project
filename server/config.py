@@ -21,4 +21,4 @@ db.init_app(app)
 
 api = Api(app)
 
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
