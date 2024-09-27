@@ -6,19 +6,29 @@ from datetime import datetime
 
 api_bp = Blueprint("api", __name__)
 
+
 @api_bp.route("/api/test", methods=["GET"])
 def test():
     return jsonify({"message": "Test Successful!"})
+
 
 @api_bp.route("/api/stores", methods=["GET"])
 def get_all_stores():
     stores = Store.query.all()
     return jsonify([store.to_dict() for store in stores])
 
-@api_bp.route("/api/stores/<int:id>", methods=["GET"])
+
+@api_bp.route("/api/stores/<int:id>", methods=["GET", "DELETE"])
 def get_store(id):
-    store = Store.query.get_or_404(id)
-    return jsonify(store.to_dict())
+    if request.method == "GET":
+        store = Store.query.get_or_404(id)
+        return jsonify(store.to_dict())
+    elif request.method == "DELETE":
+        store = Store.query.get_or_404(id)
+        db.session.delete(store)
+        db.session.commit()
+        return jsonify({}), 204
+
 
 @api_bp.route("/api/stores/create", methods=["POST", "OPTIONS"])
 def create_store():
@@ -35,10 +45,12 @@ def create_store():
 
     return jsonify(new_store.to_dict()), 201
 
+
 @api_bp.route("/api/items", methods=["GET"])
 def get_all_items():
     items = Item.query.all()
     return jsonify([item.to_dict() for item in items])
+
 
 @api_bp.route("/api/items/create", methods=["POST", "OPTIONS"])
 def create_item():
@@ -55,10 +67,12 @@ def create_item():
 
     return jsonify(new_item.to_dict()), 201
 
+
 @api_bp.route("/api/purchases", methods=["GET"])
 def get_all_item_prices():
     item_prices = ItemPrice.get_all_item_prices()
     return jsonify(item_prices)
+
 
 @api_bp.route("/api/item_prices/create", methods=["POST", "OPTIONS"])
 def create_item_price():
@@ -79,15 +93,30 @@ def create_item_price():
 
     return jsonify(new_item_price.to_dict()), 201
 
-@api_bp.route("/api/items/<int:id>", methods=["GET"])
-def get_item(id):
-    item = Item.query.get_or_404(id)
-    return jsonify(item.to_dict())
 
-@api_bp.route("/api/purchases/<int:id>", methods=["GET"])
+@api_bp.route("/api/items/<int:id>", methods=["GET", "DELETE"])
+def get_item(id):
+    if request.method == "GET":
+        item = Item.query.get_or_404(id)
+        return jsonify(item.to_dict())
+    elif request.method == "DELETE":
+        item = Item.query.get_or_404(id)
+        db.session.delete(item)
+        db.session.commit()
+        return jsonify({}), 204
+
+
+@api_bp.route("/api/purchases/<int:id>", methods=["GET", "DELETE"])
 def get_item_price(id):
-    item_price = ItemPrice.query.get_or_404(id)
-    return jsonify(item_price.to_dict())
+    if request.method == "GET":
+        item_price = ItemPrice.query.get_or_404(id)
+        return jsonify(item_price.to_dict())
+    elif request.method == "DELETE":
+        item_price = ItemPrice.query.get_or_404(id)
+        db.session.delete(item_price)
+        db.session.commit()
+        return jsonify({}), 204
+
 
 @api_bp.route("/api/stores/top5", methods=["GET"])
 def get_top5_stores():
@@ -109,6 +138,7 @@ def get_top5_stores():
 
     return jsonify(top5_stores_dict)
 
+
 @api_bp.route("/api/items/top5", methods=["GET"])
 def get_top5_items():
     top5_items = (
@@ -128,6 +158,7 @@ def get_top5_items():
     ]
 
     return jsonify(top5_items_dict)
+
 
 @api_bp.route("/api/item_prices/most_recent5", methods=["GET"])
 def get_most_recent_item_prices():
@@ -159,31 +190,56 @@ def get_most_recent_item_prices():
 
     return jsonify(recent_item_prices_dict)
 
+
 @api_bp.route("/api/item_prices/item/<int:item_id>", methods=["GET"])
 def get_item_prices_by_item(item_id):
     item_prices = ItemPrice.get_item_prices_by_item_id(item_id)
     return jsonify(item_prices)
 
+
 @api_bp.route("/api/order", methods=["GET"])
 def get_order():
     store_name = request.args.get("store")
     date_str = request.args.get("date")
-    
+
     try:
         date = datetime.strptime(date_str, "%m-%d-%Y").date()
     except ValueError:
         return jsonify({"error": "Invalid date format. Use MM-DD-YYYY."}), 400
-    
+
     item_prices = ItemPrice.get_item_price_with_details(store_name, date)
-    
+
     return jsonify(item_prices)
 
-   
+
+@api_bp.route("/api/stores/<int:id>/items", methods=["GET"])
+def get_store_items(id):
+    store = Store.query.get_or_404(id)
+    return jsonify([item.to_dict() for item in store.items])
+
+
+@api_bp.route("/api/stores/<int:id>/purchases", methods=["GET"])
+def get_store_purchases(id):
+    store = Store.query.get_or_404(id)
+    return jsonify(
+        [
+            item_price.to_dict(rules=("-store", "-store_id", "-item_id", "-updated_at"))
+            for item_price in store.item_prices
+        ]
+    )
+
+
+@api_bp.route("/api/items/<int:id>/stores", methods=["GET"])
+def get_item_stores(id):
+    item = Item.query.get_or_404(id)
+    return jsonify([store.to_dict() for store in item.stores])
+
 
 @api_bp.route("/api/orders", methods=["GET"])
 def get_orders():
     item_prices = ItemPrice.get_all_item_prices()
     return jsonify(item_prices)
+
 
 from config import app
 

@@ -19,7 +19,6 @@ const StoreDetailPage = () => {
   return (
     <div>
       <h1>Store: {store.name}</h1>
-      <p>Store ID: {store.id}</p>
       <PurchasesByStoreBlock />  
       <ItemsByStoreBlock />  
     </div>

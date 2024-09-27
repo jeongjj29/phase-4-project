@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 
 const PurchaseDetailPage = () => {
-  const { id } = useParams(); // Get the id from the URL
+  const { id } = useParams(); 
   const [purchase, setPurchase] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,14 +29,13 @@ const PurchaseDetailPage = () => {
 
   return (
     <div>
-      <h1>Purchase Details</h1>
+      <h1>Purchase: {purchase.item.name}</h1>
       {purchase && (
         <div>
-          <h2>Purchase ID: {purchase.id}</h2>
+          <p><Link to={`/stores/${purchase.store.id}`}>{purchase.store.name}</Link></p>
           <p>Price: ${purchase.price.toFixed(2)}</p>
           <p>Created At: {new Date(purchase.created_at).toLocaleString()}</p>
           <p>Store: {purchase.store.name}</p>
-          <p>Item: {purchase.item.name}</p>
         </div>
       )}
     </div>
