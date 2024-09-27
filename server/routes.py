@@ -8,7 +8,7 @@ api_bp = Blueprint('api', __name__)
 
 @api_bp.route('/api/test', methods=['GET'])
 def test():
-    return jsonify({"message": "dddd Successful!"})
+    return jsonify({"message": "Test Successful!"})
 
 @api_bp.route('/api/stores', methods=['GET'])
 def get_all_stores():
