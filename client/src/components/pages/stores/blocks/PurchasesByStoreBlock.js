@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
-const PurchasesByStoreBlock = () => {
-  return (
-    <div>PurchasesByStoreBlock</div>
-  )
-}
+const PurchasesByStoreBlock = ({ id }) => {
+  return <div>PurchasesByStoreBlock</div>;
+};
 
-export default PurchasesByStoreBlock
+export default PurchasesByStoreBlock;

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import PurchasesByStoreBlock from './blocks/PurchasesByStoreBlock';
-import ItemsByStoreBlock from './blocks/ItemsByStoreBlock';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import PurchasesByStoreBlock from "./blocks/PurchasesByStoreBlock";
+import ItemsByStoreBlock from "./blocks/ItemsByStoreBlock";
 
 const StoreDetailPage = () => {
   const { id } = useParams();
@@ -9,9 +9,9 @@ const StoreDetailPage = () => {
 
   useEffect(() => {
     fetch(`http://localhost:3001/api/stores/${id}`)
-      .then(response => response.json())
-      .then(data => setStore(data))
-      .catch(err => console.error('Error fetching store:', err));
+      .then((response) => response.json())
+      .then((data) => setStore(data))
+      .catch((err) => console.error("Error fetching store:", err));
   }, [id]);
 
   if (!store) return <p>Loading...</p>;
@@ -20,8 +20,8 @@ const StoreDetailPage = () => {
     <div>
       <h1>Store: {store.name}</h1>
       <p>Store ID: {store.id}</p>
-      <PurchasesByStoreBlock />  
-      <ItemsByStoreBlock />  
+      <PurchasesByStoreBlock id={id} name={store.name} />
+      <ItemsByStoreBlock id={id} name={store.name} />
     </div>
   );
 };

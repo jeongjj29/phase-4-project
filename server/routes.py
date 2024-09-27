@@ -212,6 +212,24 @@ def get_order():
     return jsonify(item_prices)
 
 
+@api_bp.route("/api/stores/<int:id>/items", methods=["GET"])
+def get_store_items(id):
+    store = Store.query.get_or_404(id)
+    return jsonify([item.to_dict() for item in store.items])
+
+
+@api_bp.route("/api/stores/<int:id>/purchases", methods=["GET"])
+def get_store_purchases(id):
+    store = Store.query.get_or_404(id)
+    return jsonify([item_price.to_dict() for item_price in store.item_prices])
+
+
+@api_bp.route("/api/items/<int:id>/stores", methods=["GET"])
+def get_item_stores(id):
+    item = Item.query.get_or_404(id)
+    return jsonify([store.to_dict() for store in item.stores])
+
+
 @api_bp.route("/api/orders", methods=["GET"])
 def get_orders():
     item_prices = ItemPrice.get_all_item_prices()
