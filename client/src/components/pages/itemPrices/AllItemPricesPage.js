@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom'; // Import the Link component
 import axios from 'axios';
 
 const AllItemPricesPage = () => {
@@ -20,6 +21,7 @@ const AllItemPricesPage = () => {
       <table>
         <thead>
           <tr>
+            <th>View Purchase</th>
             <th>Item</th>
             <th>Store</th>
             <th>Price</th>
@@ -30,8 +32,15 @@ const AllItemPricesPage = () => {
         <tbody>
           {itemPrices.map(itemPrice => (
             <tr key={itemPrice.id}>
-              <td>{itemPrice.item}</td>
-              <td>{itemPrice.store}</td>
+              <td>
+                <Link to={`/item-prices/${itemPrice.id}`}>View Purchase</Link>
+              </td>
+              <td>
+                <Link to={`/items/${itemPrice.item.id}`}>{itemPrice.item.name}</Link>
+              </td>
+              <td>
+                <Link to={`/stores/${itemPrice.store.id}`}>{itemPrice.store.name}</Link>
+              </td>
               <td>${itemPrice.price.toFixed(2)}</td>
               <td>{new Date(itemPrice.created_at).toLocaleDateString()}</td>
               <td>{new Date(itemPrice.updated_at).toLocaleDateString()}</td>

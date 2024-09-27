@@ -35,7 +35,6 @@ def get_all_items():
     items = Item.query.all()
     return jsonify([item.to_dict() for item in items])
 
-# Create an item
 @api_bp.route('/api/items/create', methods=['POST', 'OPTIONS'])
 def create_item():
     if request.method == 'OPTIONS':
@@ -53,15 +52,8 @@ def create_item():
 
 @api_bp.route('/api/item_prices', methods=['GET'])
 def get_all_item_prices():
-    item_prices = ItemPrice.query.all()
-    return jsonify([{
-        'id': ip.id,
-        'price': ip.price,
-        'store': ip.store.name,
-        'item': ip.item.name,
-        'created_at': ip.created_at,
-        'updated_at': ip.updated_at
-    } for ip in item_prices])
+    item_prices = ItemPrice.get_item_prices_with_details()
+    return jsonify(item_prices)
 
 @api_bp.route('/api/item_prices/create', methods=['POST', 'OPTIONS'])
 def create_item_price():

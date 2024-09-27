@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const AllStoresPage = () => {
-
   const [stores, setStores] = useState([]);
-  
+
   useEffect(() => {
     fetch('http://localhost:3001/api/stores') 
       .then(response => response.json())      
@@ -20,7 +20,7 @@ const AllStoresPage = () => {
         {stores.length > 0 ? (
           stores.map(store => (
             <li key={store.id}>
-              {store.name}
+              <Link to={`/stores/${store.id}`}>{store.name}</Link>
             </li>
           ))
         ) : (

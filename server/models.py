@@ -8,7 +8,8 @@ class Item(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
 
-    item_prices = db.relationship("ItemPrice", backref="item", cascade="all, delete")
+    # Use back_populates instead of backref
+    item_prices = db.relationship("ItemPrice", back_populates="item", cascade="all, delete")
 
     serialize_rules = ('-item_prices',)
 
@@ -21,13 +22,14 @@ class Item(db.Model, SerializerMixin):
             'name': self.name
         }
 
+
 class Store(db.Model, SerializerMixin):
     __tablename__ = "stores"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
 
-    item_prices = db.relationship("ItemPrice", backref="store", cascade="all, delete")
+    item_prices = db.relationship("ItemPrice", back_populates="store", cascade="all, delete")
 
     serialize_rules = ('-item_prices',)
 
@@ -51,5 +53,40 @@ class ItemPrice(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, default=func.now(), nullable=True)
     updated_at = db.Column(db.DateTime, default=func.now(), onupdate=func.now(), nullable=True)
 
-    def __repr__(self):
-        return f"<ItemPrice: Store {self.store_id}, Item {self.item_id}, Price {self.price}>"
+    store = db.relationship("Store", back_populates="item_prices")
+    item = db.relationship("Item", back_populates="item_prices")
+
+    @classmethod
+    def get_all_item_prices(cls):
+        item_prices = cls.query.all()
+        return [{
+            'id': ip.id,
+            'price': ip.price,
+            'created_at': ip.created_at.isoformat(),
+            'updated_at': ip.updated_at.isoformat(),
+            'store': {
+                'id': ip.store.id,
+                'name': ip.store.name
+            },
+            'item': {
+                'id': ip.item.id,
+                'name': ip.item.name
+            }
+        } for ip in item_prices]
+    @classmethod
+    def get_item_prices_with_details(cls):
+        item_prices = cls.query.all()
+        return [{
+            'id': ip.id,
+            'price': ip.price,
+            'created_at': ip.created_at.isoformat(),
+            'updated_at': ip.updated_at.isoformat(),
+            'store': {
+                'id': ip.store.id,
+                'name': ip.store.name
+            },
+            'item': {
+                'id': ip.item.id,
+                'name': ip.item.name
+            }
+        } for ip in item_prices]
