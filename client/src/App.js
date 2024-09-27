@@ -15,7 +15,6 @@ import AllItemsPage from './components/pages/items/AllItemsPage.js';
 import CreateItemPage from './components/pages/items/CreateItemPage.js';
 import ItemDetailPage from './components/pages/items/ItemDetailPage.js';
 
-import AllItemPricesPage from './components/pages/itemPrices/AllPurchasesPage.js';
 import CreateItemPricePage from './components/pages/itemPrices/CreateItemPricePage.js';
 import AllPurchasesPage from './components/pages/itemPrices/AllPurchasesPage.js';
 import PurchaseDetailPage from './components/pages/itemPrices/PurchaseDetailPage.js';

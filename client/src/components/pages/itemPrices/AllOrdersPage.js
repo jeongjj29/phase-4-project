@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 const AllOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -10,8 +9,12 @@ const AllOrdersPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/orders');
-        const groupedOrders = groupOrdersByStoreAndDate(response.data);
+        const response = await fetch('http://localhost:3001/api/orders');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        const groupedOrders = groupOrdersByStoreAndDate(data);
         setOrders(groupedOrders);
       } catch (err) {
         setError('Error fetching orders');
@@ -28,15 +31,16 @@ const AllOrdersPage = () => {
     const ordersMap = {};
 
     data.forEach((price) => {
-      const date = new Date(price.created_at).toLocaleDateString();
+      const date = new Date(price.created_at);
+      const formattedDate = `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`; // Format as MM-DD-YYYY
       const storeId = price.store.id;
 
-      const orderKey = `${storeId}_${date}`;
+      const orderKey = `${storeId}_${formattedDate}`;
 
       if (!ordersMap[orderKey]) {
         ordersMap[orderKey] = {
           store: price.store,
-          created_at: price.created_at,
+          created_at: formattedDate, // Store the formatted date here
           items: [],
         };
       }
@@ -70,10 +74,10 @@ const AllOrdersPage = () => {
           {orders.map((order, index) => (
             <tr key={index}>
               <td>
-                <Link to={`/purchase?store=${order.store.id}&date=${new Date(order.created_at).toLocaleDateString()}`}>View Order</Link>
+                <Link to={`/order?store=${order.store.name}&date=${order.created_at}`}>View Order</Link>
               </td>
               <td><Link to={`/stores/${order.store.id}`}>{order.store.name}</Link></td>
-              <td>{new Date(order.created_at).toLocaleDateString()}</td>
+              <td>{order.created_at}</td>
               <td>
                 <ul>
                   {order.items.map((item) => (
