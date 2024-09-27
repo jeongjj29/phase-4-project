@@ -142,6 +142,37 @@ def get_top5_items():
     return jsonify(top5_items_dict)
 
 
+@api_bp.route("/api/item_prices/most_recent5", methods=["GET"])
+def get_most_recent_item_prices():
+    recent_item_prices = (
+        db.session.query(
+            ItemPrice.id,
+            ItemPrice.price,
+            ItemPrice.created_at,
+            Store.name.label("store_name"),
+            Item.name.label("item_name"),
+        )
+        .join(Store, ItemPrice.store_id == Store.id)
+        .join(Item, ItemPrice.item_id == Item.id)
+        .order_by(ItemPrice.created_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    recent_item_prices_dict = [
+        {
+            "id": item_price.id,
+            "price": item_price.price,
+            "created_at": item_price.created_at.strftime("%m/%d/%Y"),
+            "store_name": item_price.store_name,
+            "item_name": item_price.item_name,
+        }
+        for item_price in recent_item_prices
+    ]
+
+    return jsonify(recent_item_prices_dict)
+
+
 from config import app
 
 app.register_blueprint(api_bp)
