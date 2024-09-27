@@ -7,7 +7,6 @@ import ContactPage from './components/pages/site/ContactPage.js';
 import Navigation from './components/navigation/Navigation';
 import PageNotFound from './components/pages/site/PageNotFound.js';
 
-// Store and Item components
 import AllStoresPage from './components/pages/stores/AllStoresPage.js';
 import CreateStorePage from './components/pages/stores/CreateStorePage.js';
 import AllItemsPage from './components/pages/items/AllItemsPage';
@@ -26,15 +25,12 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<ContactPage />} />
             
-            {/* Store routes */}
             <Route path="/stores" element={<AllStoresPage />} />
             <Route path="/create-store" element={<CreateStorePage />} />
 
-            {/* Item routes */}
             <Route path="/items" element={<AllItemsPage />} />
             <Route path="/create-item" element={<CreateItemPage />} />
 
-            {/* Item Price routes */}
             <Route path="/item-prices" element={<AllItemPricesPage />} />
             <Route path="/create-item-price" element={<CreateItemPricePage />} />
 
