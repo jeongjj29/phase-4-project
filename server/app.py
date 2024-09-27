@@ -9,8 +9,8 @@ from flask_restful import Resource
 # Local imports
 from config import app, db, api
 
-# Add your model imports
-from models import Item, List, ListItems, Purchase, Store
+# Import only the models that exist
+from models import Item, Store, ItemPrice
 
 # Views go here!
 
