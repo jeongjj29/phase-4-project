@@ -1,4 +1,4 @@
-from sqlalchemy import func
+from sqlalchemy import func, and_
 from sqlalchemy_serializer import SerializerMixin
 from config import db
 
@@ -73,13 +73,24 @@ class ItemPrice(db.Model, SerializerMixin):
         } for ip in item_prices]
 
     @classmethod
-    def get_item_prices_with_details(cls):
-        item_prices = cls.query.order_by(cls.created_at.desc()).all()
+    def get_item_price_with_details(cls, store_name, date):
+        item_prices = (
+            cls.query
+            .join(Store)
+            .filter(
+                and_(
+                    Store.name == store_name,
+                    func.date(cls.created_at) == date  # Filter by date
+                )
+            )
+            .order_by(cls.created_at.desc())
+            .all()
+        )
+        
         return [{
             'id': ip.id,
             'price': ip.price,
             'created_at': ip.created_at.isoformat(),
-            'updated_at': ip.updated_at.isoformat(),
             'store': {
                 'id': ip.store.id,
                 'name': ip.store.name
@@ -89,6 +100,7 @@ class ItemPrice(db.Model, SerializerMixin):
                 'name': ip.item.name
             }
         } for ip in item_prices]
+
 
     @classmethod
     def get_item_prices_by_item_id(cls, item_id):

@@ -78,7 +78,7 @@ const CreateItemPricePage = () => {
             </div>
 
             <button type="submit" disabled={isSubmitting}>
-              Create Item Price
+              Create Purchase
             </button>
           </Form>
         )}

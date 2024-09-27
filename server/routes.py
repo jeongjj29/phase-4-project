@@ -57,7 +57,7 @@ def create_item():
 
 @api_bp.route("/api/purchases", methods=["GET"])
 def get_all_item_prices():
-    item_prices = ItemPrice.get_item_prices_with_details()
+    item_prices = ItemPrice.get_all_item_prices()
     return jsonify(item_prices)
 
 @api_bp.route("/api/item_prices/create", methods=["POST", "OPTIONS"])
@@ -168,17 +168,17 @@ def get_item_prices_by_item(item_id):
 def get_order():
     store_name = request.args.get("store")
     date_str = request.args.get("date")
-
-    if not store_name or not date_str:
-        return jsonify({"error": "Store and date parameters are required"}), 400
     
     try:
         date = datetime.strptime(date_str, "%m-%d-%Y").date()
     except ValueError:
         return jsonify({"error": "Invalid date format. Use MM-DD-YYYY."}), 400
-
-    item_prices = ItemPrice.get_item_prices_with_details(store_name, date)
+    
+    item_prices = ItemPrice.get_item_price_with_details(store_name, date)
+    
     return jsonify(item_prices)
+
+   
 
 @api_bp.route("/api/orders", methods=["GET"])
 def get_orders():

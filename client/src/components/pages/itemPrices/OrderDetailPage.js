@@ -15,7 +15,7 @@ const OrderDetailPage = () => {
       const date = params.get('date');
 
       try {
-        const response = await fetch(`http://localhost:3001/api/orders?store=${store}&date=${date}`);
+        const response = await fetch(`http://localhost:3001/api/order?store=${store}&date=${date}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
