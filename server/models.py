@@ -1,6 +1,6 @@
+from sqlalchemy import func
 from sqlalchemy_serializer import SerializerMixin
 from config import db
-
 
 class Item(db.Model, SerializerMixin):
     __tablename__ = "items"
@@ -13,7 +13,6 @@ class Item(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<Item {self.name}>"
 
-
 class Store(db.Model, SerializerMixin):
     __tablename__ = "stores"
 
@@ -25,7 +24,6 @@ class Store(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<Store {self.name}>"
 
-
 class ItemPrice(db.Model, SerializerMixin):
     __tablename__ = "item_prices"
 
@@ -33,6 +31,8 @@ class ItemPrice(db.Model, SerializerMixin):
     price = db.Column(db.Float, nullable=False)
     store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=False)
     item_id = db.Column(db.Integer, db.ForeignKey("items.id"), nullable=False)
+    created_at = db.Column(db.DateTime, default=func.now(), nullable=True)
+    updated_at = db.Column(db.DateTime, default=func.now(), onupdate=func.now(), nullable=True)
 
     def __repr__(self):
         return f"<ItemPrice: Store {self.store_id}, Item {self.item_id}, Price {self.price}>"
