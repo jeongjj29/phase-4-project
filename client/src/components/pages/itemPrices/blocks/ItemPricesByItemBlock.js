@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom'; // Import Link
 
-const ItemPricesByItem = ({ item_id }) => {
+const ItemPricesByItemBlock = ({ item_id }) => {
   const [itemPrices, setItemPrices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,4 +52,4 @@ const ItemPricesByItem = ({ item_id }) => {
   );
 };
 
-export default ItemPricesByItem;
+export default ItemPricesByItemBlock;

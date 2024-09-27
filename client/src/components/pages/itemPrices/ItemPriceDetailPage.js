@@ -18,7 +18,7 @@ const ItemPriceDetailPage = () => {
   return (
     <div>
       <h1>{itemPrice.item.name}</h1>
-      <h1>{itemPrice.price}</h1>
+      <h1>${itemPrice.price}</h1>
       <p>Store:  <Link to={`/stores/${itemPrice.store.id}`}>{itemPrice.store.name}</Link></p>
       <ItemPricesByItemBlock item_id={itemPrice.item_id} />
     </div>

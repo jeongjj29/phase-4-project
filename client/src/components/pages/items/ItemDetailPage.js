@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import PurchasesByItemBlock from './blocks/PurchasesByItemBlock';
+import ItemPricesByItemBlock from '../itemPrices/blocks/ItemPricesByItemBlock';
 
 const ItemDetailPage = () => {
   const { id } = useParams();
@@ -18,8 +18,7 @@ const ItemDetailPage = () => {
   return (
     <div>
       <h1>Item: {item.name}</h1>
-      <p>Item ID: {item.id}</p>
-      <PurchasesByItemBlock />
+      <ItemPricesByItemBlock item_id={item.id} />
     </div>
   );
 };
