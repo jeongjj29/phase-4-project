@@ -90,3 +90,16 @@ class ItemPrice(db.Model, SerializerMixin):
                 'name': ip.item.name
             }
         } for ip in item_prices]
+
+    @classmethod
+    def get_item_prices_by_item_id(cls, item_id):
+        item_prices = cls.query.filter_by(item_id=item_id).all()
+        return [{
+            'id': ip.id,
+            'price': ip.price,
+            'created_at': ip.created_at.strftime("%m/%d/%Y"),
+            'store': {
+                'id': ip.store.id,
+                'name': ip.store.name
+            }
+        } for ip in item_prices]

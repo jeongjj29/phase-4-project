@@ -172,6 +172,10 @@ def get_most_recent_item_prices():
 
     return jsonify(recent_item_prices_dict)
 
+@api_bp.route("/api/item_prices/item/<int:item_id>", methods=["GET"])
+def get_item_prices_by_item(item_id):
+    item_prices = ItemPrice.get_item_prices_by_item_id(item_id)
+    return jsonify(item_prices)
 
 from config import app
 
