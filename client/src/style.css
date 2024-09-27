@@ -31,6 +31,7 @@ nav > ul {
 }
 
 nav > ul > li > a {
+  color:black;
   display: flex;
   padding: 12px 24px;
   font-weight: bold;
@@ -43,7 +44,14 @@ nav > ul > li > a:hover {
   background: lightgrey;
   color: black;
 }
-
+div.App nav ul li button {
+  padding: 12px;
+  border-radius: 0 !important;
+  color: black;
+}
+div.App nav ul li button:hover {
+  background: lightgrey;
+}
 .container-lg {
   padding: 20px;
   border-radius: 8px;
@@ -125,4 +133,6 @@ td, th {
   border: 1px solid #ddd;
   text-align: left;
 }
+
+
 
