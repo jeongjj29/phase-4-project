@@ -63,6 +63,26 @@ def get_all_item_prices():
         'updated_at': ip.updated_at
     } for ip in item_prices])
 
+@api_bp.route('/api/item_prices/create', methods=['POST', 'OPTIONS'])
+def create_item_price():
+    if request.method == 'OPTIONS':
+        return jsonify({"status": "OK"}), 200
+
+    data = request.get_json()
+
+    if 'price' not in data or 'store_id' not in data or 'item_id' not in data:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    new_item_price = ItemPrice(
+        price=data['price'],
+        store_id=data['store_id'],
+        item_id=data['item_id']
+    )
+
+    db.session.add(new_item_price)
+    db.session.commit()
+
+    return jsonify(new_item_price.to_dict()), 201
 
 from config import app
 app.register_blueprint(api_bp)

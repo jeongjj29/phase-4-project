@@ -10,6 +10,8 @@ class Item(db.Model, SerializerMixin):
 
     item_prices = db.relationship("ItemPrice", backref="item", cascade="all, delete")
 
+    serialize_rules = ('-item_prices',)
+
     def __repr__(self):
         return f"<Item {self.name}>"
 
@@ -27,6 +29,8 @@ class Store(db.Model, SerializerMixin):
 
     item_prices = db.relationship("ItemPrice", backref="store", cascade="all, delete")
 
+    serialize_rules = ('-item_prices',)
+
     def __repr__(self):
         return f"<Store {self.name}>"
     
@@ -35,6 +39,7 @@ class Store(db.Model, SerializerMixin):
             'id': self.id,
             'name': self.name
         }
+
 
 class ItemPrice(db.Model, SerializerMixin):
     __tablename__ = "item_prices"
