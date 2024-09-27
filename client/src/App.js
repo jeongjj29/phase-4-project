@@ -9,10 +9,15 @@ import PageNotFound from './components/pages/site/PageNotFound.js';
 
 import AllStoresPage from './components/pages/stores/AllStoresPage.js';
 import CreateStorePage from './components/pages/stores/CreateStorePage.js';
-import AllItemsPage from './components/pages/items/AllItemsPage';
+import StoreDetailPage from './components/pages/stores/StoreDetailPage.js';
+
+import AllItemsPage from './components/pages/items/AllItemsPage.js';
 import CreateItemPage from './components/pages/items/CreateItemPage.js';
+import ItemDetailPage from './components/pages/items/ItemDetailPage.js';
+
 import AllItemPricesPage from './components/pages/itemPrices/AllItemPricesPage.js';
 import CreateItemPricePage from './components/pages/itemPrices/CreateItemPricePage.js';
+import ItemPriceDetailPage from './components/pages/itemPrices/ItemPriceDetailPage.js';
 
 function App() {
   return (
@@ -27,12 +32,15 @@ function App() {
             
             <Route path="/stores" element={<AllStoresPage />} />
             <Route path="/create-store" element={<CreateStorePage />} />
+            <Route path="/stores/:id" element={<StoreDetailPage />} />
 
             <Route path="/items" element={<AllItemsPage />} />
             <Route path="/create-item" element={<CreateItemPage />} />
+            <Route path="/items/:id" element={<ItemDetailPage />} />
 
             <Route path="/item-prices" element={<AllItemPricesPage />} />
             <Route path="/create-item-price" element={<CreateItemPricePage />} />
+            <Route path="/item-prices/:id" element={<ItemPriceDetailPage />} />
 
             <Route path="*" element={<PageNotFound />} />
           </Routes>

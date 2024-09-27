@@ -84,5 +84,30 @@ def create_item_price():
 
     return jsonify(new_item_price.to_dict()), 201
 
+
+
+
+
+
+
+
+@api_bp.route('/api/stores/<int:id>', methods=['GET'])
+def get_store(id):
+    store = Store.query.get_or_404(id)
+    return jsonify(store.to_dict())
+
+@api_bp.route('/api/items/<int:id>', methods=['GET'])
+def get_item(id):
+    item = Item.query.get_or_404(id)
+    return jsonify(item.to_dict())
+
+@api_bp.route('/api/item_prices/<int:id>', methods=['GET'])
+def get_item_price(id):
+    item_price = ItemPrice.query.get_or_404(id)
+    return jsonify(item_price.to_dict())
+
+
+
+
 from config import app
 app.register_blueprint(api_bp)
