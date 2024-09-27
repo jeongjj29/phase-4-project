@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import ItemPricesByItem from './blocks/ItemPricesByItem.js';
 
 const ItemPriceDetailPage = () => {
   const { id } = useParams();
@@ -20,6 +21,7 @@ const ItemPriceDetailPage = () => {
       <p>Item ID: {itemPrice.item_id}</p>
       <p>Store ID: {itemPrice.store_id}</p>
       <p>Price: ${itemPrice.price}</p>
+      <ItemPricesByItem />
     </div>
   );
 };

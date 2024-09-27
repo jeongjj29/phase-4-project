@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import PurchasesByItemBlock from './blocks/PurchasesByItemBlock';
 
 const ItemDetailPage = () => {
   const { id } = useParams();
@@ -18,7 +19,7 @@ const ItemDetailPage = () => {
     <div>
       <h1>Item: {item.name}</h1>
       <p>Item ID: {item.id}</p>
-      {/* Add more details as needed */}
+      <PurchasesByItemBlock />
     </div>
   );
 };

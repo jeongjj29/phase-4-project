@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import RecentlyAddedStoresBlock from './blocks/RecentlyAddedStoresBlock.js';
 
 const AllStoresPage = () => {
   const [stores, setStores] = useState([]);
@@ -27,6 +28,7 @@ const AllStoresPage = () => {
           <li>No stores available</li>
         )}
       </ul>
+      <RecentlyAddedStoresBlock />
     </div>
   );
 };

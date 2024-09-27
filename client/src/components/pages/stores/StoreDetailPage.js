@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import PurchasesByStoreBlock from './blocks/PurchasesByStoreBlock';
+import ItemsByStoreBlock from './blocks/ItemsByStoreBlock';
 
 const StoreDetailPage = () => {
   const { id } = useParams();
@@ -18,7 +20,8 @@ const StoreDetailPage = () => {
     <div>
       <h1>Store: {store.name}</h1>
       <p>Store ID: {store.id}</p>
-      {/* Add more details as needed */}
+      <PurchasesByStoreBlock />  
+      <ItemsByStoreBlock />  
     </div>
   );
 };
