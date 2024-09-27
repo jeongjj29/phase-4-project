@@ -25,7 +25,7 @@ const CreateItemPricePage = () => {
 
   return (
     <div>
-      <h1>Create Item Price</h1>
+      <h1>Create Purchase</h1>
       <Formik
         initialValues={{ price: '', store_id: '', item_id: '' }}
         validationSchema={ItemPriceSchema}

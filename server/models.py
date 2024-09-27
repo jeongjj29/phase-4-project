@@ -1,20 +1,36 @@
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, Column, Integer, String, Float, Enum
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
 from config import db
 
 
 class Item(db.Model, SerializerMixin):
-    __tablename__ = "items"
+    __tablename__ = 'items'
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    image_url = db.Column(db.String, nullable=True)
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    image_url = Column(String, nullable=True)
+    
+    category = Column(String, nullable=False) 
+
+<<<<<<< HEAD
+    item_prices = db.relationship(
+        "ItemPrice", back_populates="item", cascade="all, delete"
+    )
+
+=======
+    description = Column(String, nullable=True)
+    group = Column(String, nullable=False)
+    form = Column(String, nullable=False)  
+    count = Column(Integer, nullable=False)  
+    department = Column(String, nullable=False) 
+    size = Column(String, nullable=True)
 
     item_prices = db.relationship(
         "ItemPrice", back_populates="item", cascade="all, delete"
     )
 
+>>>>>>> refs/remotes/origin/main
     stores = association_proxy("item_prices", "store")
 
     serialize_rules = ("-item_prices",)
@@ -22,9 +38,12 @@ class Item(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<Item {self.name}>"
 
+<<<<<<< HEAD
     def to_dict(self):
         return {"id": self.id, "name": self.name, "image_url": self.image_url}
 
+=======
+>>>>>>> refs/remotes/origin/main
 
 class Store(db.Model, SerializerMixin):
     __tablename__ = "stores"
@@ -83,7 +102,11 @@ class ItemPrice(db.Model, SerializerMixin):
             .filter(
                 and_(
                     Store.name == store_name,
+<<<<<<< HEAD
                     func.date(cls.created_at) == date,  # Filter by date
+=======
+                    func.date(cls.created_at) == date,
+>>>>>>> refs/remotes/origin/main
                 )
             )
             .order_by(cls.created_at.desc())
@@ -105,7 +128,11 @@ class ItemPrice(db.Model, SerializerMixin):
     def get_item_prices_by_item_id(cls, item_id):
         item_prices = (
             cls.query.filter_by(item_id=item_id).order_by(cls.created_at.desc()).all()
+<<<<<<< HEAD
         )  # Sort by created_at
+=======
+        )
+>>>>>>> refs/remotes/origin/main
         return [
             {
                 "id": ip.id,

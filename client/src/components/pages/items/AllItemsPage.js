@@ -23,6 +23,12 @@ const AllItemsPage = () => {
           <tr>
             <th style={{ border: '1px solid #ccc', padding: '10px' }}>Image</th>
             <th style={{ border: '1px solid #ccc', padding: '10px' }}>Item Name</th>
+            <th style={{ border: '1px solid #ccc', padding: '10px' }}>Category</th>
+            <th style={{ border: '1px solid #ccc', padding: '10px' }}>Group</th>
+            <th style={{ border: '1px solid #ccc', padding: '10px' }}>Form</th>
+            <th style={{ border: '1px solid #ccc', padding: '10px' }}>Department</th>
+            <th style={{ border: '1px solid #ccc', padding: '10px' }}>Count</th>
+            <th style={{ border: '1px solid #ccc', padding: '10px' }}>Size</th>
           </tr>
         </thead>
         <tbody>
@@ -40,6 +46,12 @@ const AllItemsPage = () => {
               <td style={{ border: '1px solid #ccc', padding: '10px' }}>
                 <Link to={`/items/${item.id}`}>{item.name}</Link>
               </td>
+              <td style={{ border: '1px solid #ccc', padding: '10px' }}>{item.category}</td>
+              <td style={{ border: '1px solid #ccc', padding: '10px' }}>{item.group}</td>
+              <td style={{ border: '1px solid #ccc', padding: '10px' }}>{item.form}</td>
+              <td style={{ border: '1px solid #ccc', padding: '10px' }}>{item.department}</td>
+              <td style={{ border: '1px solid #ccc', padding: '10px' }}>{item.count}</td>
+              <td style={{ border: '1px solid #ccc', padding: '10px' }}>{item.size}</td>
             </tr>
           ))}
         </tbody>
