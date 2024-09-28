@@ -10,10 +10,10 @@ class Item(db.Model, SerializerMixin):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     image_url = Column(String, nullable=True)
+    count = Column(Integer, nullable=False)
     category = Column(String, nullable=False)
     group = Column(String, nullable=False)
     form = Column(String, nullable=False)
-    count = Column(Integer, nullable=False)
     department = Column(String, nullable=False)
     size = Column(String, nullable=True)
     category = Column(String, nullable=True)
@@ -30,7 +30,7 @@ class Item(db.Model, SerializerMixin):
         return f"<Item {self.name}>"
 
     @classmethod
-    def create(cls, name, image_url, group, form, count, department, size, category):
+    def create(cls, name, image_url, count, group, form, department, size, category):
         new_item = cls(
             name=name,
             image_url=image_url,

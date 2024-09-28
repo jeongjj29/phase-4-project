@@ -96,7 +96,6 @@ button:hover {
   background-color: #0056b3;
 }
 
-/* Error message styling */
 div > div {
   font-size: 0.9em;
 }
@@ -112,27 +111,99 @@ div > div {
   max-width: 300px;
   margin: auto;
 }
-/* Table styling */
 table {
   width: 100%;
   border-collapse: collapse;
 }
 
-/* Table row styling */
-tr:nth-child(even) {
-  background-color: #f2f2f2; /* Light grey for even rows */
-}
 
-tr:nth-child(odd) {
-  background-color: white; /* White for odd rows */
-}
 
-/* Optional: Table border styling */
-td, th {
+tr {
   padding: 8px;
   border: 1px solid #ddd;
   text-align: left;
 }
+td.store > a, td.visit_order_btn > a {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+  padding: 10px 30px;
+}
 
+table td.store a:hover {
+  color: dodgerblue;
+}
+button {
+  background: transparent;
+  color: grey;
+  font-size: 25px;
 
+}
 
+button:hover {
+  background: transparent;
+  color: dodgerblue;
+}
+
+.visit_order_btn a > * {
+  color: grey;
+  border-radius: 30px;
+  font-size: 30px;
+  margin-top: -7px;
+  position: absolute;
+  margin-left: 10px;
+}
+.visit_order_btn a:hover > * {
+  color: dodgerblue;
+}
+
+table.order_purchases_lst a {
+  text-decoration: none;
+  color: black;
+  padding: 10px 20px;
+  display: block;
+}
+
+table.order_purchases_lst a:hover {
+  color: dodgerblue;
+}
+
+td.visit_order_btn > a:hover {
+  color: dodgerblue;
+}
+
+td.visit_order_btn > a:hover {
+  color: dodgerblue;
+}
+
+table.order_purchases_lst {
+  width: 80%;
+  margin: 10px auto 20px;
+}
+td.visit_order_btn > a {
+  padding: 15px 50px 15px 14px;
+}
+td.visit_order_btn {
+  text-align: right;
+}
+
+th.order_store_th {
+  text-indent: 20px;
+}
+
+th.order_store_th > svg, th.order_date_th > svg {
+  position: absolute;
+  margin-top: -5px;
+}
+
+thead {
+  background: #F1F1F1;
+}
+table.order_purchases_lst > thead > tr > th {
+  padding: 13px;
+}
+
+table.order_purchases_lst > thead > tr > th > svg {
+  position: absolute;
+  margin-top: -6px;
+}
