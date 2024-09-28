@@ -11,7 +11,6 @@ class Item(db.Model, SerializerMixin):
     name = Column(String, nullable=False)
     image_url = Column(String, nullable=True)
     category = Column(String, nullable=False)
-    description = Column(String, nullable=True)
     group = Column(String, nullable=False)
     form = Column(String, nullable=False)
     count = Column(Integer, nullable=False)
