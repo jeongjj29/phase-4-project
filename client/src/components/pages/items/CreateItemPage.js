@@ -1,7 +1,6 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
 
 const ItemSchema = Yup.object().shape({
   name: Yup.string()
@@ -19,24 +18,32 @@ const CreateItemPage = () => {
       <Formik
         initialValues={{
           name: '',
-          description: '',
+          image_url: '',
           group: '',
           form: '',
           department: '',
           size: '',
-          price_per_unit: '',
-          total_price: '',
+          category: '',
+          count: '',
         }}
         validationSchema={ItemSchema}
         onSubmit={(values) => {
-          axios.post('/api/items', values)
-            .then(response => {
-              console.log("Item created:", response.data);
+          fetch('http://localhost:3001/api/items', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(values),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Item created:", data);
             })
-            .catch(error => {
+            .catch((error) => {
               console.error("There was an error creating the item!", error);
             });
         }}
+        
       >
         {({ values }) => (
           <Form>
@@ -46,14 +53,48 @@ const CreateItemPage = () => {
               <ErrorMessage name="name" component="div" />
             </div>
             <div>
-              <label htmlFor="group">Group</label>
-              <Field as="select" name="group">
-                <option value="">Select a group</option>
-                <option value="Dairy">Dairy</option>
+              <label htmlFor="image_url">Image URL</label>
+              <Field name="image_url" type="text" />
+              <ErrorMessage name="image_url" component="div" />
+            </div>
+            <div>
+              <label htmlFor="count">Count</label>
+              <Field name="count" type="number" />
+              <ErrorMessage name="count" component="div" />
+            </div>
+            <div>
+            <label htmlFor="category">Category</label>
+            <Field as="select" name="category">
+              <option value="">Select a category</option>
+              <option value="Dairy">Dairy</option>
                 <option value="Fruits/Vege.">Fruits/Vege.</option>
                 <option value="Grains">Grains</option>
                 <option value="Proteins">Proteins</option>
                 <option value="Others">Others</option>
+            </Field>
+            <ErrorMessage name="category" component="div" />
+          </div>
+
+            <div>
+              <label htmlFor="group">Group</label>
+              <Field as="select" name="group">
+                <option value="">Select a group</option>
+                <option value="Dairy">Produce</option>
+                <option value="Fruits/Vege.">Dried Fruit</option>
+                <option value="Grains">Eggs</option>
+                <option value="Proteins">Seafood</option>
+                <option value="Others">Sweeteners</option>
+                <option value="Others">Frozen</option>
+                <option value="Others">Cheese</option>
+                <option value="Others">Beverages</option>
+                <option value="Others">Dry Goods</option>
+                <option value="Others">Juices</option>
+                <option value="Others">Bread</option>
+                <option value="Others">Granola Bars</option>
+                <option value="Others">Coffee</option>
+                <option value="Others">Candy</option>
+                <option value="Others">Meat</option>
+                <option value="Others">Dairy</option>
               </Field>
               <ErrorMessage name="group" component="div" />
             </div>
@@ -95,14 +136,6 @@ const CreateItemPage = () => {
             <div>
               <label htmlFor="size">Size</label>
               <Field name="size" type="text" />
-            </div>
-            <div>
-              <label htmlFor="price_per_unit">Price per Unit</label>
-              <Field name="price_per_unit" type="number" step="0.01" />
-            </div>
-            <div>
-              <label htmlFor="total_price">Total Price</label>
-              <Field name="total_price" type="number" step="0.01" />
             </div>
             <button type="submit">Create Item</button>
           </Form>

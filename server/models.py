@@ -10,15 +10,14 @@ class Item(db.Model, SerializerMixin):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     image_url = Column(String, nullable=True)
-
     category = Column(String, nullable=False)
-
     description = Column(String, nullable=True)
     group = Column(String, nullable=False)
     form = Column(String, nullable=False)
     count = Column(Integer, nullable=False)
     department = Column(String, nullable=False)
     size = Column(String, nullable=True)
+    category = Column(String, nullable=True)
 
     item_prices = db.relationship(
         "ItemPrice", back_populates="item", cascade="all, delete"
@@ -31,6 +30,21 @@ class Item(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<Item {self.name}>"
 
+    @classmethod
+    def create(cls, name, image_url, group, form, count, department, size, category):
+        new_item = cls(
+            name=name,
+            image_url=image_url,
+            group=group,
+            form=form,
+            count=count,
+            department=department,
+            size=size,
+            category=category
+        )
+        db.session.add(new_item)
+        db.session.commit()
+        return new_item
 
 class Store(db.Model, SerializerMixin):
     __tablename__ = "stores"

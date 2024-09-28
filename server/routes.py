@@ -52,21 +52,20 @@ def get_all_items():
     return jsonify([item.to_dict() for item in items])
 
 
-@api_bp.route("/api/items/create", methods=["POST", "OPTIONS"])
+@api_bp.route('/api/items', methods=['POST'])
 def create_item():
-    if request.method == "OPTIONS":
-        return jsonify({"status": "OK"}), 200
-
     data = request.get_json()
-    if "name" not in data or len(data["name"]) < 3:
-        return jsonify({"error": "Item name must be at least 3 characters long"}), 400
-
-    new_item = Item(name=data["name"])
-    db.session.add(new_item)
-    db.session.commit()
-
+    new_item = Item.create(
+        name=data.get('name'),
+        image_url=data.get('image_url'),
+        group=data.get('group'),
+        form=data.get('form'),
+        count=data.get('count'),
+        department=data.get('department'),
+        size=data.get('size'),
+        category=data.get('category'),
+    )
     return jsonify(new_item.to_dict()), 201
-
 
 @api_bp.route("/api/purchases", methods=["GET"])
 def get_all_item_prices():
