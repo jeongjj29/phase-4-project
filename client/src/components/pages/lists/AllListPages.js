@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
 import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
@@ -10,13 +10,14 @@ import './AllListStyle.css';
 
 const AllListsPage = () => {
   const [lists, setLists] = useState([]);
-  const [items, setItems] = useState({}); // To store fetched items by ID
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [visibleItems, setVisibleItems] = useState({});
   const [showAllItems, setShowAllItems] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
-  const [itemSortConfig, setItemSortConfig] = useState({});
+  
+  // Create a ref for each list's transition
+  const nodeRefs = useRef({});  // Store refs for each list
 
   useEffect(() => {
     const fetchLists = async () => {
@@ -36,28 +37,6 @@ const AllListsPage = () => {
     };
 
     fetchLists();
-  }, []);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const response = await fetch('http://localhost:3001/api/items');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        const itemsMap = {};
-        data.forEach(item => {
-          itemsMap[item.id] = item;
-        });
-        setItems(itemsMap);
-      } catch (err) {
-        setError('Error fetching items');
-        console.error(err);
-      }
-    };
-
-    fetchItems();
   }, []);
 
   const toggleItemsVisibility = (listId) => {
@@ -125,8 +104,12 @@ const AllListsPage = () => {
         </thead>
         <tbody>
           {lists.map((list) => {
-            const itemIds = list.items || [];
             const listKey = list.id;
+
+            // Create a ref for each list item
+            if (!nodeRefs.current[listKey]) {
+              nodeRefs.current[listKey] = React.createRef();
+            }
 
             return (
               <React.Fragment key={listKey}>
@@ -150,8 +133,9 @@ const AllListsPage = () => {
                   timeout={300}
                   classNames="list"
                   unmountOnExit
+                  nodeRef={nodeRefs.current[listKey]}  // Pass the ref to the transition
                 >
-                  <tr className='list_items'>
+                  <tr className='list_items' ref={nodeRefs.current[listKey]}>
                     <td colSpan={3}>
                       <table className="list_items_table">
                         <thead>
@@ -161,21 +145,14 @@ const AllListsPage = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {itemIds.map((itemId) => {
-                            const item = items[itemId];
-                            return item ? (
-                              <tr key={item.id}>
-                                <td>
-                                  <Link to={`/items/${item.id}`}>{item.name}</Link>
-                                </td>
-                                <td>${item.price ? item.price.toFixed(2) : 'N/A'}</td>
-                                </tr>
-                            ) : (
-                              <tr key={itemId}>
-                                <td colSpan={2}>Item not found</td>
-                              </tr>
-                            );
-                          })}
+                          {list.items.map((item) => (
+                            <tr key={item.id}>
+                              <td>
+                                <Link to={`/items/${item.id}`}>{item.name}</Link>
+                              </td>
+                              <td>${item.price ? item.price.toFixed(2) : 'N/A'}</td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
                     </td>

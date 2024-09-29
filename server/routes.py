@@ -259,6 +259,11 @@ def get_orders():
     item_prices = ItemPrice.get_all_item_prices()
     return jsonify(item_prices)
 
+@api_bp.route("/api/lists", methods=["GET"])
+def get_all_lists():
+    lists = List.query.all()
+    return jsonify([lst.to_dict_with_items() for lst in lists])
+
 @api_bp.route("/api/lists", methods=["POST"])
 def create_list():
     data = request.get_json()
@@ -277,10 +282,6 @@ def create_list():
 
     return jsonify(new_list.to_dict()), 201
 
-@api_bp.route("/api/lists", methods=["GET"])
-def get_all_lists():
-    lists = List.query.all()
-    return jsonify([lst.to_dict() for lst in lists])
 
 
 from config import app

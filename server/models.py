@@ -79,7 +79,6 @@ class Store(db.Model, SerializerMixin):
             'name': self.name
         }
 
-
 class ItemPrice(db.Model, SerializerMixin):
     __tablename__ = "item_prices"
 
@@ -150,7 +149,6 @@ class ItemPrice(db.Model, SerializerMixin):
             for ip in item_prices
         ]
     
-
 class List(db.Model, SerializerMixin):
     __tablename__ = 'lists'
     
@@ -165,7 +163,12 @@ class List(db.Model, SerializerMixin):
             'title': self.title,
             'items': [item.id for item in self.items]
         }
-    
+    def to_dict_with_items(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'items': [item.to_dict() for item in self.items]
+        }
 class ItemList(db.Model):
     __tablename__ = "item_list"
 
