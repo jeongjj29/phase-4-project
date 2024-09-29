@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 const ListDetailsPage = () => {
-  const { id } = useParams(); // Get the list ID from the URL params
-  const [list, setList] = useState(null); // Store list details
+  const { id } = useParams();
+  const [list, setList] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -25,14 +25,14 @@ const ListDetailsPage = () => {
     };
 
     fetchListDetails();
-  }, [id]); // Fetch list whenever the id changes
+  }, [id]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <div>
-      <h1>{list?.title || 'List Details'}</h1>
+      <h1>List: {list?.title || 'List Details'}</h1>
       {list?.items?.length === 0 ? (
         <div>No items found in this list.</div>
       ) : (

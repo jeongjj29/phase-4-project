@@ -103,10 +103,9 @@ const AllListsPage = () => {
           </tr>
         </thead>
         <tbody>
-          {lists.map((list) => {
+        {lists.map((list) => {
             const listKey = list.id;
 
-            // Create a ref for each list item
             if (!nodeRefs.current[listKey]) {
               nodeRefs.current[listKey] = React.createRef();
             }
@@ -123,7 +122,7 @@ const AllListsPage = () => {
                     <Link to={`/lists/${list.id}`}>{list.title}</Link>
                   </td>
                   <td className="view-list-btn">
-                    <Link to={`/list/${list.id}`}>
+                    <Link to={`/lists/${list.id}`}>
                       View <KeyboardArrowRightIcon />
                     </Link>
                   </td>
@@ -137,28 +136,33 @@ const AllListsPage = () => {
                 >
                   <tr className='list_items' ref={nodeRefs.current[listKey]}>
                     <td colSpan={3}>
-                      <table className="list_items_table">
-                        <thead>
-                          <tr>
-                            <th>Item</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {list.items.map((item) => (
-                            <tr key={item.id}>
-                              <td>
-                                <Link to={`/items/${item.id}`}>{item.name}</Link>
-                              </td>
+                      {list.items.length > 0 ? (
+                        <table className="list_items_table">
+                          <thead>
+                            <tr>
+                              <th>Item</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {list.items.map((item) => (
+                              <tr key={item.id}>
+                                <td>
+                                  <Link to={`/items/${item.id}`}>{item.name}</Link>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <div>No items found</div>
+                      )}
                     </td>
                   </tr>
                 </CSSTransition>
               </React.Fragment>
             );
           })}
+          
         </tbody>
       </table>
     </div>
