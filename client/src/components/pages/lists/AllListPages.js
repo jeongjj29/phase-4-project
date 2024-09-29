@@ -141,7 +141,6 @@ const AllListsPage = () => {
                         <thead>
                           <tr>
                             <th>Item</th>
-                            <th>Price</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -150,7 +149,6 @@ const AllListsPage = () => {
                               <td>
                                 <Link to={`/items/${item.id}`}>{item.name}</Link>
                               </td>
-                              <td>${item.price ? item.price.toFixed(2) : 'N/A'}</td>
                             </tr>
                           ))}
                         </tbody>
