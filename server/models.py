@@ -18,16 +18,28 @@ class Item(db.Model, SerializerMixin):
     size = Column(String, nullable=True)
     category = Column(String, nullable=True)
 
-    item_prices = db.relationship(
-        "ItemPrice", back_populates="item", cascade="all, delete"
-    )
+    lists = db.relationship('List', secondary='item_list', back_populates='items')
+    item_prices = db.relationship("ItemPrice", back_populates="item", cascade="all, delete")
 
     stores = association_proxy("item_prices", "store")
 
-    serialize_rules = ("-item_prices",)
+    serialize_rules = ("-item_prices", "-lists", "-stores")
 
     def __repr__(self):
         return f"<Item {self.name}>"
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'image_url': self.image_url,
+            'count': self.count,
+            'category': self.category,
+            'group': self.group,
+            'form': self.form,
+            'department': self.department,
+            'size': self.size
+        }
 
     @classmethod
     def create(cls, name, image_url, count, group, form, department, size, category):
@@ -56,14 +68,16 @@ class Store(db.Model, SerializerMixin):
     )
     items = association_proxy("item_prices", "item")
 
-    serialize_rules = ("-item_prices",)
+    serialize_rules = ("-item_prices.item",)
 
     def __repr__(self):
         return f"<Store {self.name}>"
 
     def to_dict(self):
-        return {"id": self.id, "name": self.name}
-
+        return {
+            'id': self.id,
+            'name': self.name
+        }
 
 class ItemPrice(db.Model, SerializerMixin):
     __tablename__ = "item_prices"
@@ -73,13 +87,13 @@ class ItemPrice(db.Model, SerializerMixin):
     store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=False)
     item_id = db.Column(db.Integer, db.ForeignKey("items.id"), nullable=False)
     created_at = db.Column(db.DateTime, default=func.now(), nullable=True)
-    updated_at = db.Column(
-        db.DateTime, default=func.now(), onupdate=func.now(), nullable=True
-    )
+    updated_at = db.Column(db.DateTime, default=func.now(), onupdate=func.now(), nullable=True)
 
     store = db.relationship("Store", back_populates="item_prices")
     item = db.relationship("Item", back_populates="item_prices")
 
+    serialize_rules = ("-store.item_prices", "-item.store")  
+    
     @classmethod
     def get_all_item_prices(cls):
         item_prices = cls.query.order_by(cls.created_at.desc()).all()
@@ -134,3 +148,31 @@ class ItemPrice(db.Model, SerializerMixin):
             }
             for ip in item_prices
         ]
+    
+class List(db.Model, SerializerMixin):
+    __tablename__ = 'lists'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100))
+    
+    items = db.relationship('Item', secondary='item_list', back_populates='lists')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'items': [item.id for item in self.items]
+        }
+    def to_dict_with_items(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'items': [item.to_dict() for item in self.items]
+        }
+    
+class ItemList(db.Model):
+    __tablename__ = "item_list"
+
+    id = Column(Integer, primary_key=True)
+    list_id = Column(Integer, db.ForeignKey("lists.id"), nullable=False)
+    item_id = Column(Integer, db.ForeignKey("items.id"), nullable=False)
