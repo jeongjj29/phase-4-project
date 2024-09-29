@@ -74,6 +74,11 @@ const Navigation = () => {
           </Link>
         </li>
         <li>
+          <Link to="/lists">
+            Lists
+          </Link>
+        </li>
+        <li>
           <Button onClick={handleAddMenuClick} variant="text">
             <AddIcon /> Add
           </Button>

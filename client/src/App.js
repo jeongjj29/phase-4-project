@@ -21,6 +21,7 @@ import PurchaseDetailPage from './components/pages/itemPrices/PurchaseDetailPage
 
 import OrderDetailPage from './components/pages/itemPrices/OrderDetailPage.js';
 import AllOrdersPage from './components/pages/itemPrices/AllOrdersPage.js';
+import AllListsPage from './components/pages/lists/AllListPages.js';
 
 function App() {
   return (
@@ -48,6 +49,8 @@ function App() {
             <Route path="/purchases" element={<AllPurchasesPage />} />
             
             <Route path="/create-item-price" element={<CreateItemPricePage />} />
+
+            <Route path="/lists" element={<AllListsPage />} />
 
             <Route path="*" element={<PageNotFound />} />
           </Routes>

@@ -1,6 +1,6 @@
 from sqlalchemy import func
 from flask import Blueprint, jsonify, request
-from models import Store, Item, ItemPrice
+from models import Store, Item, ItemPrice, List
 from config import db
 from datetime import datetime
 
@@ -201,14 +201,34 @@ def get_order():
     store_name = request.args.get("store")
     date_str = request.args.get("date")
 
+    # Parse the date string into a datetime object
     try:
-        date = datetime.strptime(date_str, "%m-%d-%Y").date()
+        date = datetime.strptime(date_str, "%Y-%m-%d")
     except ValueError:
-        return jsonify({"error": "Invalid date format. Use MM-DD-YYYY."}), 400
+        return jsonify({"error": "Invalid date format. Use YYYY-MM-DD."}), 400
 
-    item_prices = ItemPrice.get_item_price_with_details(store_name, date)
+    # Query the database for orders filtered by store and date
+    query = db.session.query(ItemPrice, Store, Item).join(Store, ItemPrice.store_id == Store.id).join(Item, ItemPrice.item_id == Item.id)
 
-    return jsonify(item_prices)
+    if store_name:
+        query = query.filter(Store.name == store_name)
+    
+    query = query.filter(func.date(ItemPrice.created_at) == date)
+
+    orders = query.all()
+
+    # Serialize the orders
+    order_list = []
+    for item_price, store, item in orders:
+        order_list.append({
+            "item_price_id": item_price.id,
+            "price": item_price.price,
+            "store_name": store.name,
+            "item_name": item.name,
+            "created_at": item_price.created_at.strftime("%m/%d/%Y"),
+        })
+
+    return jsonify(order_list)
 
 
 @api_bp.route("/api/stores/<int:id>/items", methods=["GET"])
@@ -238,6 +258,29 @@ def get_item_stores(id):
 def get_orders():
     item_prices = ItemPrice.get_all_item_prices()
     return jsonify(item_prices)
+
+@api_bp.route("/api/lists", methods=["POST"])
+def create_list():
+    data = request.get_json()
+    title = data.get('title')
+    item_ids = data.get('items')
+
+    new_list = List(title=title)
+
+    for item_id in item_ids:
+        item = Item.query.get(item_id)
+        if item:
+            new_list.items.append(item)
+
+    db.session.add(new_list)
+    db.session.commit()
+
+    return jsonify(new_list.to_dict()), 201
+
+@api_bp.route("/api/lists", methods=["GET"])
+def get_all_lists():
+    lists = List.query.all()
+    return jsonify([lst.to_dict() for lst in lists])
 
 
 from config import app
