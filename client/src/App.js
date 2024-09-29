@@ -22,6 +22,7 @@ import PurchaseDetailPage from './components/pages/itemPrices/PurchaseDetailPage
 import OrderDetailPage from './components/pages/itemPrices/OrderDetailPage.js';
 import AllOrdersPage from './components/pages/itemPrices/AllOrdersPage.js';
 import AllListsPage from './components/pages/lists/AllListPages.js';
+import ListDetailsPage from './components/pages/lists/ListDetailsPage.js';
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
             <Route path="/create-item-price" element={<CreateItemPricePage />} />
 
             <Route path="/lists" element={<AllListsPage />} />
+            <Route path="/lists/:id" element={<ListDetailsPage />} />
 
             <Route path="*" element={<PageNotFound />} />
           </Routes>

@@ -169,6 +169,7 @@ class List(db.Model, SerializerMixin):
             'title': self.title,
             'items': [item.to_dict() for item in self.items]
         }
+    
 class ItemList(db.Model):
     __tablename__ = "item_list"
 

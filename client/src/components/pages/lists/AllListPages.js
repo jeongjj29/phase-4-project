@@ -133,7 +133,7 @@ const AllListsPage = () => {
                   timeout={300}
                   classNames="list"
                   unmountOnExit
-                  nodeRef={nodeRefs.current[listKey]}  // Pass the ref to the transition
+                  nodeRef={nodeRefs.current[listKey]}
                 >
                   <tr className='list_items' ref={nodeRefs.current[listKey]}>
                     <td colSpan={3}>

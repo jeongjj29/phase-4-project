@@ -282,6 +282,11 @@ def create_list():
 
     return jsonify(new_list.to_dict()), 201
 
+@api_bp.route("/api/lists/<int:id>", methods=["GET"])
+def get_list(id):
+    lst = List.query.get_or_404(id)
+
+    return jsonify(lst.to_dict_with_items())
 
 
 from config import app
