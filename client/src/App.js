@@ -24,6 +24,7 @@ import AllOrdersPage from './components/pages/orders/AllOrdersPage.js';
 
 import AllListsPage from './components/pages/lists/AllListPages.js';
 import ListDetailsPage from './components/pages/lists/ListDetailsPage.js';
+import CreateOrderPage from './components/pages/orders/CreateOrderPage.js';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
             <Route path="/create-item" element={<CreateItemPage />} />
             <Route path="/items/:id" element={<ItemDetailPage />} />
 
+            <Route path="/create-order" element={<CreateOrderPage />} />
             <Route path="/orders" element={<AllOrdersPage />} />
             <Route path="/orders/:id" element={<OrderDetailsPage />} />
 

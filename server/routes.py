@@ -245,6 +245,19 @@ def get_list(id):
 
     return jsonify(lst.to_dict_with_items())
 
+@api_bp.route('/api/orders', methods=['POST'])
+def create_order():
+    data = request.json
+    item_name = data.get('item_name')
+    quantity = data.get('quantity')
+
+    if not item_name or quantity is None:
+        return jsonify({"error": "Item name and quantity are required"}), 400
+
+    new_order = Order.create(item_name=item_name, quantity=quantity)
+    return jsonify(new_order.to_dict()), 201
+
+
 @api_bp.route('/api/orders', methods=['GET', 'POST'])
 def handle_orders():
     if request.method == 'POST':

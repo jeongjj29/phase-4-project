@@ -93,6 +93,11 @@ const Navigation = () => {
               </Link>
             </MenuItem>
             <MenuItem onClick={handleCloseAddMenu}>
+              <Link to="/create-order" style={{ textDecoration: 'none', color: 'inherit' }}>
+                Order
+              </Link>
+            </MenuItem>
+            <MenuItem onClick={handleCloseAddMenu}>
               <Link to="/create-item" style={{ textDecoration: 'none', color: 'inherit' }}>
                 Item
               </Link>
