@@ -16,8 +16,7 @@ const AllListsPage = () => {
   const [showAllItems, setShowAllItems] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
   
-  // Create a ref for each list's transition
-  const nodeRefs = useRef({});  // Store refs for each list
+  const nodeRefs = useRef({});
 
   useEffect(() => {
     const fetchLists = async () => {

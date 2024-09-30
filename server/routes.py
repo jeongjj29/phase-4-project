@@ -201,13 +201,11 @@ def get_order():
     store_name = request.args.get("store")
     date_str = request.args.get("date")
 
-    # Parse the date string into a datetime object
     try:
         date = datetime.strptime(date_str, "%Y-%m-%d")
     except ValueError:
         return jsonify({"error": "Invalid date format. Use YYYY-MM-DD."}), 400
 
-    # Query the database for orders filtered by store and date
     query = db.session.query(ItemPrice, Store, Item).join(Store, ItemPrice.store_id == Store.id).join(Item, ItemPrice.item_id == Item.id)
 
     if store_name:
@@ -217,7 +215,6 @@ def get_order():
 
     orders = query.all()
 
-    # Serialize the orders
     order_list = []
     for item_price, store, item in orders:
         order_list.append({

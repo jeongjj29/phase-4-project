@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import ClearIcon from '@mui/icons-material/Clear';
-import AddIcon from '@mui/icons-material/Add';
 
 const AllItemsPage = () => {
   const [items, setItems] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-  const [listTitle, setListTitle] = useState('');
-  const [listId, setListId] = useState(null);    
+  const [groupBy, setGroupBy] = useState('');
 
   useEffect(() => {
+    const savedCartItems = localStorage.getItem('cartItems');
+    if (savedCartItems) {
+      setCartItems(JSON.parse(savedCartItems));
+    }
+
     axios.get('http://localhost:3001/api/items')
       .then((response) => {
         setItems(response.data);
@@ -20,8 +23,12 @@ const AllItemsPage = () => {
       });
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
+
   const handleCheckboxChange = (item) => {
-    if (cartItems.includes(item)) {
+    if (cartItems.some(i => i.id === item.id)) {
       setCartItems(cartItems.filter(i => i.id !== item.id));
     } else {
       setCartItems([...cartItems, item]);
@@ -32,36 +39,22 @@ const AllItemsPage = () => {
     setCartItems(cartItems.filter(item => item.id !== itemId));
   };
 
-  const handleSaveList = () => {
-    if (!listTitle) {
-      alert("Please provide a title for the shopping list.");
-      return;
-    }
+  const groupCartItems = (items, groupBy) => {
+    if (!groupBy) return { '': items };
 
-    const listData = {
-      title: listTitle,
-      items: cartItems.map(item => item.id),
-    };
-
-    if (listId) {
-      axios.put(`http://localhost:3001/api/lists/${listId}`, listData)
-        .then(() => {
-          alert("Shopping list updated successfully!");
-        })
-        .catch((error) => {
-          console.error("Error updating list:", error);
-        });
-    } else {
-      axios.post('http://localhost:3001/api/lists', listData)
-        .then((response) => {
-          setListId(response.data.id);
-          alert("Shopping list created successfully!");
-        })
-        .catch((error) => {
-          console.error("Error creating list:", error);
-        });
-    }
+    return items.reduce((grouped, item) => {
+      const key = item[groupBy.toLowerCase()];
+      if (key) {
+        if (!grouped[key]) {
+          grouped[key] = [];
+        }
+        grouped[key].push(item);
+      }
+      return grouped;
+    }, {});
   };
+
+  const groupedCartItems = groupCartItems(cartItems, groupBy);
 
   return (
     <div style={{ display: 'flex' }}>
@@ -87,7 +80,7 @@ const AllItemsPage = () => {
                 <td style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>
                   <input 
                     type="checkbox" 
-                    checked={cartItems.includes(item)}
+                    checked={cartItems.some(i => i.id === item.id)}
                     onChange={() => handleCheckboxChange(item)} 
                   />
                 </td>
@@ -116,30 +109,35 @@ const AllItemsPage = () => {
       </div>
 
       <div style={{ width: '30%', padding: '20px', borderLeft: '1px solid #ccc' }}>
-        <h2>List</h2>
-        <input 
-          type="text" 
-          placeholder="Shopping List Title" 
-          value={listTitle}
-          onChange={(e) => setListTitle(e.target.value)} 
-          style={{ width: '100%', padding: '10px', marginBottom: '10px' }} 
-        />
-        <button onClick={handleSaveList}
-        style={{
-          'position': 'absolute',
-          'marginTop': '-50px',
-          'margineft': '260px',
-
-        }}><AddIcon /></button>
-        <ul>
-          {cartItems.map(item => (
-            <li key={item.id}>
-              {item.name} 
-              <button onClick={() => handleRemoveFromCart(item.id)}><ClearIcon /></button>
-            </li>
-          ))}
-        </ul>
+        <h2>Shopping Cart</h2>
         
+        <label htmlFor="groupBy">Group by:</label>
+        <select 
+          id="groupBy" 
+          value={groupBy} 
+          onChange={(e) => setGroupBy(e.target.value)} 
+          style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
+        >
+          <option value="">None</option>
+          <option value="Category">Category</option>
+          <option value="Group">Group</option>
+          <option value="Form">Form</option>
+          <option value="Department">Department</option>
+        </select>
+
+        {Object.keys(groupedCartItems).map(group => (
+          <div key={group}>
+            {group && <h2>{group}</h2>}
+            <ul>
+              {groupedCartItems[group].map(item => (
+                <li key={item.id}>
+                  {item.name} 
+                  <button onClick={() => handleRemoveFromCart(item.id)}><ClearIcon /></button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </div>
   );
