@@ -8,7 +8,7 @@ const AllItemsPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [groupBy, setGroupBy] = useState("");
   const [sortedField, setSortedField] = useState(null);
-  const [reversedSort, setReversedSort] = useState(false);
+  const [isReversedSort, setIsReversedSort] = useState(false);
 
   useEffect(() => {
     const savedCartItems = localStorage.getItem("cartItems");
@@ -59,12 +59,13 @@ const AllItemsPage = () => {
 
   const groupedCartItems = groupCartItems(cartItems, groupBy);
 
-  const handleSortButtonClick = (field) => {
+  const handleSortClick = (field) => {
     if (sortedField === field) {
-      setReversedSort(!reversedSort);
-      return;
+      setIsReversedSort(!isReversedSort);
+    } else {
+      setSortedField(field);
+      setIsReversedSort(false);
     }
-    setSortedField(field);
   };
 
   const sortedItems = [...items];
@@ -78,7 +79,19 @@ const AllItemsPage = () => {
       }
       return 0;
     });
+
+    if (isReversedSort) {
+      sortedItems.reverse();
+    }
   }
+
+  const sortButton = (field) => {
+    return (
+      <button onClick={() => handleSortClick(field)}>
+        {sortedField === field && isReversedSort ? "▾" : "▴"}
+      </button>
+    );
+  };
 
   return (
     <div style={{ display: "flex" }}>
@@ -94,20 +107,23 @@ const AllItemsPage = () => {
                 Image
               </th>
               <th style={{ border: "1px solid #ccc", padding: "10px" }}>
-                Item Name{" "}
-                <button onClick={handleSortButtonClick()}>sort</button>
+                Item Name {sortButton("name")}
               </th>
               <th style={{ border: "1px solid #ccc", padding: "10px" }}>
                 Category
+                {sortButton("category")}
               </th>
               <th style={{ border: "1px solid #ccc", padding: "10px" }}>
                 Group
+                {sortButton("group")}
               </th>
               <th style={{ border: "1px solid #ccc", padding: "10px" }}>
                 Form
+                {sortButton("form")}
               </th>
               <th style={{ border: "1px solid #ccc", padding: "10px" }}>
                 Department
+                {sortButton("department")}
               </th>
               <th style={{ border: "1px solid #ccc", padding: "10px" }}>
                 Count
