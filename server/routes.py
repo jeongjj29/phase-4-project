@@ -1,6 +1,6 @@
 from sqlalchemy import func
 from flask import Blueprint, jsonify, request
-from models import Store, Item, ItemPrice, List
+from models import Store, Item, ItemPrice, List, Order
 from config import db
 from datetime import datetime
 
@@ -195,39 +195,6 @@ def get_item_prices_by_item(item_id):
     item_prices = ItemPrice.get_item_prices_by_item_id(item_id)
     return jsonify(item_prices)
 
-
-@api_bp.route("/api/order", methods=["GET"])
-def get_order():
-    store_name = request.args.get("store")
-    date_str = request.args.get("date")
-
-    try:
-        date = datetime.strptime(date_str, "%Y-%m-%d")
-    except ValueError:
-        return jsonify({"error": "Invalid date format. Use YYYY-MM-DD."}), 400
-
-    query = db.session.query(ItemPrice, Store, Item).join(Store, ItemPrice.store_id == Store.id).join(Item, ItemPrice.item_id == Item.id)
-
-    if store_name:
-        query = query.filter(Store.name == store_name)
-    
-    query = query.filter(func.date(ItemPrice.created_at) == date)
-
-    orders = query.all()
-
-    order_list = []
-    for item_price, store, item in orders:
-        order_list.append({
-            "item_price_id": item_price.id,
-            "price": item_price.price,
-            "store_name": store.name,
-            "item_name": item.name,
-            "created_at": item_price.created_at.strftime("%m/%d/%Y"),
-        })
-
-    return jsonify(order_list)
-
-
 @api_bp.route("/api/stores/<int:id>/items", methods=["GET"])
 def get_store_items(id):
     store = Store.query.get_or_404(id)
@@ -244,17 +211,10 @@ def get_store_purchases(id):
         ]
     )
 
-
 @api_bp.route("/api/items/<int:id>/stores", methods=["GET"])
 def get_item_stores(id):
     item = Item.query.get_or_404(id)
     return jsonify([store.to_dict() for store in item.stores])
-
-
-@api_bp.route("/api/orders", methods=["GET"])
-def get_orders():
-    item_prices = ItemPrice.get_all_item_prices()
-    return jsonify(item_prices)
 
 @api_bp.route("/api/lists", methods=["GET"])
 def get_all_lists():
@@ -285,6 +245,20 @@ def get_list(id):
 
     return jsonify(lst.to_dict_with_items())
 
+@api_bp.route('/api/orders', methods=['GET', 'POST'])
+def handle_orders():
+    if request.method == 'POST':
+        data = request.get_json()
+        new_order = Order.create(item_name=data['item_name'], quantity=data['quantity'])
+        return jsonify(new_order.to_dict()), 201
+
+    orders = Order.query.all()
+    return jsonify([order.to_dict() for order in orders])
+
+@api_bp.route('/api/orders/<int:id>', methods=['GET'])
+def get_order(id):
+    order = Order.query.get_or_404(id)
+    return jsonify(order.to_dict())
 
 from config import app
 

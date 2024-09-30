@@ -19,8 +19,9 @@ import CreateItemPricePage from './components/pages/itemPrices/CreateItemPricePa
 import AllPurchasesPage from './components/pages/itemPrices/AllPurchasesPage.js';
 import PurchaseDetailPage from './components/pages/itemPrices/PurchaseDetailPage.js';
 
-import OrderDetailPage from './components/pages/itemPrices/OrderDetailPage.js';
-import AllOrdersPage from './components/pages/itemPrices/AllOrdersPage.js';
+import OrderDetailsPage from './components/pages/orders/OrderDetailsPage.js';
+import AllOrdersPage from './components/pages/orders/AllOrdersPage.js';
+
 import AllListsPage from './components/pages/lists/AllListPages.js';
 import ListDetailsPage from './components/pages/lists/ListDetailsPage.js';
 
@@ -44,7 +45,7 @@ function App() {
             <Route path="/items/:id" element={<ItemDetailPage />} />
 
             <Route path="/orders" element={<AllOrdersPage />} />
-            <Route path="/order" element={<OrderDetailPage />} />
+            <Route path="/orders/:id" element={<OrderDetailsPage />} />
 
             <Route path="/purchases/:id" element={<PurchaseDetailPage />} />
             <Route path="/purchases" element={<AllPurchasesPage />} />

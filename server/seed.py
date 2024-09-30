@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from sqlalchemy import func
 from config import db
-from models import Store, Item, ItemPrice
+from models import Store, Item, ItemPrice, Order
 from random import choice as rc
 from random import uniform as ru
 from random import randrange as rr
@@ -117,6 +117,17 @@ def seed_data():
 
         db.session.add_all(item_prices)
         db.session.commit()
+
+        # Seed empty orders
+        orders = [
+            Order(item_name="Order 1", quantity=0),
+            Order(item_name="Order 2", quantity=0),
+            Order(item_name="Order 3", quantity=0),
+        ]
+
+        db.session.add_all(orders)
+        db.session.commit()
+
 
 if __name__ == "__main__":
     seed_data()
