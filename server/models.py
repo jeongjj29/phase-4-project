@@ -176,3 +176,28 @@ class ItemList(db.Model):
     id = Column(Integer, primary_key=True)
     list_id = Column(Integer, db.ForeignKey("lists.id"), nullable=False)
     item_id = Column(Integer, db.ForeignKey("items.id"), nullable=False)
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    item_name = db.Column(db.String(100), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    def __init__(self, item_name, quantity):
+        self.item_name = item_name
+        self.quantity = quantity
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'item_name': self.item_name,
+            'quantity': self.quantity,
+            'created_at': self.created_at
+        }
+
+    @classmethod
+    def create(cls, item_name, quantity):
+        new_order = cls(item_name=item_name, quantity=quantity)
+        db.session.add(new_order)
+        db.session.commit()
+        return new_order
