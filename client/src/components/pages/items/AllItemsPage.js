@@ -1,20 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import ClearIcon from '@mui/icons-material/Clear';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const AllItemsPage = () => {
   const [items, setItems] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-  const [groupBy, setGroupBy] = useState('');
+  const [groupBy, setGroupBy] = useState("");
+  const [sortedField, setSortedField] = useState(null);
+  const [reversedSort, setReversedSort] = useState(false);
 
   useEffect(() => {
-    const savedCartItems = localStorage.getItem('cartItems');
+    const savedCartItems = localStorage.getItem("cartItems");
     if (savedCartItems) {
       setCartItems(JSON.parse(savedCartItems));
     }
 
-    axios.get('http://localhost:3001/api/items')
+    axios
+      .get("http://localhost:3001/api/items")
       .then((response) => {
         setItems(response.data);
       })
@@ -24,23 +27,23 @@ const AllItemsPage = () => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
   const handleCheckboxChange = (item) => {
-    if (cartItems.some(i => i.id === item.id)) {
-      setCartItems(cartItems.filter(i => i.id !== item.id));
+    if (cartItems.some((i) => i.id === item.id)) {
+      setCartItems(cartItems.filter((i) => i.id !== item.id));
     } else {
       setCartItems([...cartItems, item]);
     }
   };
 
   const handleRemoveFromCart = (itemId) => {
-    setCartItems(cartItems.filter(item => item.id !== itemId));
+    setCartItems(cartItems.filter((item) => item.id !== itemId));
   };
 
   const groupCartItems = (items, groupBy) => {
-    if (!groupBy) return { '': items };
+    if (!groupBy) return { "": items };
 
     return items.reduce((grouped, item) => {
       const key = item[groupBy.toLowerCase()];
@@ -56,67 +59,137 @@ const AllItemsPage = () => {
 
   const groupedCartItems = groupCartItems(cartItems, groupBy);
 
+  const handleSortButtonClick = (field) => {
+    if (sortedField === field) {
+      setReversedSort(!reversedSort);
+      return;
+    }
+    setSortedField(field);
+  };
+
+  const sortedItems = [...items];
+  if (sortedField !== null) {
+    sortedItems.sort((a, b) => {
+      if (a[sortedField] < b[sortedField]) {
+        return -1;
+      }
+      if (a[sortedField] > b[sortedField]) {
+        return 1;
+      }
+      return 0;
+    });
+  }
+
   return (
-    <div style={{ display: 'flex' }}>
-      <div style={{ width: '70%' }}>
+    <div style={{ display: "flex" }}>
+      <div style={{ width: "70%" }}>
         <h1>All Items</h1>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th style={{ border: '1px solid #ccc', padding: '10px' }}>Add to Cart</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px' }}>Image</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px' }}>Item Name</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px' }}>Category</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px' }}>Group</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px' }}>Form</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px' }}>Department</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px' }}>Count</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px' }}>Size</th>
+              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
+                Add to Cart
+              </th>
+              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
+                Image
+              </th>
+              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
+                Item Name{" "}
+                <button onClick={handleSortButtonClick()}>sort</button>
+              </th>
+              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
+                Category
+              </th>
+              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
+                Group
+              </th>
+              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
+                Form
+              </th>
+              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
+                Department
+              </th>
+              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
+                Count
+              </th>
+              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
+                Size
+              </th>
             </tr>
           </thead>
           <tbody>
-            {items.map(item => (
+            {sortedItems.map((item) => (
               <tr key={item.id}>
-                <td style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>
-                  <input 
-                    type="checkbox" 
-                    checked={cartItems.some(i => i.id === item.id)}
-                    onChange={() => handleCheckboxChange(item)} 
+                <td
+                  style={{
+                    border: "1px solid #ccc",
+                    padding: "10px",
+                    textAlign: "center",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={cartItems.some((i) => i.id === item.id)}
+                    onChange={() => handleCheckboxChange(item)}
                   />
                 </td>
-                <td style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>
-                  {item.image_url && item.image_url.trim() !== '' ? (
-                    <img 
-                      src={`/assets/item_images/${item.image_url}`} 
-                      alt={item.name} 
-                      style={{ width: '40px', height: '40px', objectFit: 'cover' }} 
+                <td
+                  style={{
+                    border: "1px solid #ccc",
+                    padding: "10px",
+                    textAlign: "center",
+                  }}
+                >
+                  {item.image_url && item.image_url.trim() !== "" ? (
+                    <img
+                      src={`/assets/item_images/${item.image_url}`}
+                      alt={item.name}
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        objectFit: "cover",
+                      }}
                     />
                   ) : null}
                 </td>
-                <td style={{ border: '1px solid #ccc', padding: '10px' }}>
+                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
                   <Link to={`/items/${item.id}`}>{item.name}</Link>
                 </td>
-                <td style={{ border: '1px solid #ccc', padding: '10px' }}>{item.category}</td>
-                <td style={{ border: '1px solid #ccc', padding: '10px' }}>{item.group}</td>
-                <td style={{ border: '1px solid #ccc', padding: '10px' }}>{item.form}</td>
-                <td style={{ border: '1px solid #ccc', padding: '10px' }}>{item.department}</td>
-                <td style={{ border: '1px solid #ccc', padding: '10px' }}>{item.count}</td>
-                <td style={{ border: '1px solid #ccc', padding: '10px' }}>{item.size}</td>
+                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                  {item.category}
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                  {item.group}
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                  {item.form}
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                  {item.department}
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                  {item.count}
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                  {item.size}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div style={{ width: '30%', padding: '20px', borderLeft: '1px solid #ccc' }}>
+      <div
+        style={{ width: "30%", padding: "20px", borderLeft: "1px solid #ccc" }}
+      >
         <h2>Shopping Cart</h2>
-        
+
         <label htmlFor="groupBy">Group by:</label>
-        <select 
-          id="groupBy" 
-          value={groupBy} 
-          onChange={(e) => setGroupBy(e.target.value)} 
-          style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
+        <select
+          id="groupBy"
+          value={groupBy}
+          onChange={(e) => setGroupBy(e.target.value)}
+          style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
         >
           <option value="">None</option>
           <option value="Category">Category</option>
@@ -125,14 +198,16 @@ const AllItemsPage = () => {
           <option value="Department">Department</option>
         </select>
 
-        {Object.keys(groupedCartItems).map(group => (
+        {Object.keys(groupedCartItems).map((group) => (
           <div key={group}>
             {group && <h2>{group}</h2>}
             <ul>
-              {groupedCartItems[group].map(item => (
+              {groupedCartItems[group].map((item) => (
                 <li key={item.id}>
-                  {item.name} 
-                  <button onClick={() => handleRemoveFromCart(item.id)}><ClearIcon /></button>
+                  {item.name}
+                  <button onClick={() => handleRemoveFromCart(item.id)}>
+                    <ClearIcon />
+                  </button>
                 </li>
               ))}
             </ul>
