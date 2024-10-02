@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from sqlalchemy import func
 from config import db
-from models import Store, Item, ItemPrice, Order
+from models import Store, Item, ItemPrice, Order, List
 from random import choice as rc
 from random import uniform as ru
 from random import randrange as rr
@@ -11,6 +11,8 @@ def seed_data():
     with app.app_context():
         db.drop_all()
         db.create_all()
+
+
 
         stores = [
             Store(name="SuperMart"),
@@ -64,34 +66,33 @@ def seed_data():
         db.session.add_all(stores)
         db.session.add_all(items)
 
-        created_time = datetime.now()
 
 
 
         item_prices = [
-            ItemPrice(price=1.99, store=stores[0], item=items[1], created_at=datetime.strptime("2024-09-01 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=1.99, store=stores[0], item=items[2], created_at=datetime.strptime("2024-09-01 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=1.99, store=stores[0], item=items[3], created_at=datetime.strptime("2024-09-01 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=1, price=1.99, store=stores[0], item=items[1], created_at=datetime.strptime("2024-09-01 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=1, price=1.99, store=stores[0], item=items[2], created_at=datetime.strptime("2024-09-01 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=1, price=1.99, store=stores[0], item=items[3], created_at=datetime.strptime("2024-09-01 16:37:57", "%Y-%m-%d %H:%M:%S")),
 
-            ItemPrice(price=2.49, store=stores[1], item=items[1], created_at=datetime.strptime("2024-09-11 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=2.99, store=stores[1], item=items[2], created_at=datetime.strptime("2024-09-11 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=2.49, store=stores[1], item=items[3], created_at=datetime.strptime("2024-09-11 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=2.99, store=stores[1], item=items[7], created_at=datetime.strptime("2024-09-11 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=0.99, store=stores[1], item=items[1], created_at=datetime.strptime("2024-09-11 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=1.49, store=stores[1], item=items[6], created_at=datetime.strptime("2024-09-11 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=2, price=2.49, store=stores[1], item=items[1], created_at=datetime.strptime("2024-09-11 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=2, price=2.99, store=stores[1], item=items[2], created_at=datetime.strptime("2024-09-11 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=2, price=2.49, store=stores[1], item=items[3], created_at=datetime.strptime("2024-09-11 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=2, price=2.99, store=stores[1], item=items[7], created_at=datetime.strptime("2024-09-11 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=2, price=0.99, store=stores[1], item=items[1], created_at=datetime.strptime("2024-09-11 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=2, price=1.49, store=stores[1], item=items[6], created_at=datetime.strptime("2024-09-11 16:37:57", "%Y-%m-%d %H:%M:%S")),
 
-            ItemPrice(price=2.49, store=stores[2], item=items[2], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=2.99, store=stores[2], item=items[7], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=1.49, store=stores[2], item=items[10], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=2.49, store=stores[2], item=items[12], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=0.99, store=stores[2], item=items[11], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=1.49, store=stores[2], item=items[0], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=2.49, store=stores[2], item=items[2], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=0.99, store=stores[2], item=items[1], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=3, price=2.49, store=stores[2], item=items[2], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=3, price=2.99, store=stores[2], item=items[7], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=3, price=1.49, store=stores[2], item=items[10], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=3, price=2.49, store=stores[2], item=items[12], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=3, price=0.99, store=stores[2], item=items[11], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=3, price=1.49, store=stores[2], item=items[0], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=3, price=2.49, store=stores[2], item=items[2], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=3, price=0.99, store=stores[2], item=items[1], created_at=datetime.strptime("2024-09-02 16:37:57", "%Y-%m-%d %H:%M:%S")),
 
-            ItemPrice(price=1.49, store=stores[1], item=items[0], created_at=datetime.strptime("2024-09-02 01:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=2.49, store=stores[1], item=items[2], created_at=datetime.strptime("2024-09-02 01:37:57", "%Y-%m-%d %H:%M:%S")),
-            ItemPrice(price=0.99, store=stores[1], item=items[1], created_at=datetime.strptime("2024-09-02 01:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=1, price=1.49, store=stores[1], item=items[0], created_at=datetime.strptime("2024-09-02 01:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=1, price=2.49, store=stores[1], item=items[2], created_at=datetime.strptime("2024-09-02 01:37:57", "%Y-%m-%d %H:%M:%S")),
+            ItemPrice(order_id=1, price=0.99, store=stores[1], item=items[1], created_at=datetime.strptime("2024-09-02 01:37:57", "%Y-%m-%d %H:%M:%S")),
 
             ItemPrice(price=3.49, store=stores[3], item=items[3], created_at=datetime.strptime("2024-09-06 16:37:57", "%Y-%m-%d %H:%M:%S")),
             ItemPrice(price=3.99, store=stores[3], item=items[5], created_at=datetime.strptime("2024-09-06 16:37:57", "%Y-%m-%d %H:%M:%S")),
@@ -120,14 +121,25 @@ def seed_data():
 
         # Seed empty orders
         orders = [
-            Order(item_name="Order 1", quantity=0),
-            Order(item_name="Order 2", quantity=0),
-            Order(item_name="Order 3", quantity=0),
+            Order(created_at=datetime(2024, 9, 1, 11, 45), store_id=stores[0].id),  # Use store_id from the seeded stores
+            Order(created_at=datetime(2024, 9, 15, 17, 30), store_id=stores[1].id),  # Similarly, associate with another store
+            Order(created_at=datetime(2024, 9, 20, 14, 0), store_id=stores[2].id),  # And another
         ]
 
         db.session.add_all(orders)
         db.session.commit()
 
+        # Create new lists
+        list1 = List(title="Produce Essentials")
+        list2 = List(title="Dairy and Bakery")
+        list3 = List(title="Snacks and Beverages")
+        
+        list1.items.extend([items[0], items[1], items[6], items[13]])  # Apples, Bananas, Grapes, Oranges
+        list2.items.extend([items[4], items[11], items[19], items[20]])  # Eggs, Milk, Bread, Chewy Granola Bars
+        list3.items.extend([items[8], items[21], items[22], items[24]])  # Ice Cream, Coffee, Hershey's Chocolate, Juice
+
+        db.session.add_all([list1, list2, list3])
+        db.session.commit()
 
 if __name__ == "__main__":
     seed_data()
