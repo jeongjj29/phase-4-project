@@ -163,11 +163,21 @@ def handle_purchases():
         return make_response({"status": "OK"}, 200)
 
 
-@api_bp.route("/api/purchases/<int:id>", methods=["GET", "DELETE"])
+@api_bp.route("/api/purchases/<int:id>", methods=["GET", "PATCH", "DELETE"])
 def handle_purchase(id):
     if request.method == "GET":
         item_price = ItemPrice.query.get_or_404(id)
         return make_response(item_price.to_dict())
+
+    elif request.method == "PATCH":
+        data = request.get_json()
+        item_price = ItemPrice.query.get_or_404(id)
+        for key, value in data.items():
+            setattr(item_price, key, value)
+        db.session.add(item_price)
+        db.session.commit()
+        return make_response(item_price.to_dict())
+
     elif request.method == "DELETE":
         item_price = ItemPrice.query.get_or_404(id)
         db.session.delete(item_price)
