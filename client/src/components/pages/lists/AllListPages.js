@@ -18,6 +18,7 @@ const AllListsPage = () => {
     key: "",
     direction: "ascending",
   });
+  const [childSortConfig, setChildSortConfig] = useState({});
 
   const nodeRefs = useRef({});
 
@@ -80,6 +81,48 @@ const AllListsPage = () => {
   const getSortIcon = (key) => {
     if (sortConfig.key === key) {
       return sortConfig.direction === "ascending" ? (
+        <KeyboardArrowUpIcon />
+      ) : (
+        <KeyboardArrowDownIcon />
+      );
+    }
+    return null;
+  };
+
+  const handleChildSort = (listId, key) => {
+    const currentConfig = childSortConfig[listId] || { key: "", direction: "ascending" };
+    let direction = "ascending";
+    if (currentConfig.key === key && currentConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setChildSortConfig((prevState) => ({
+      ...prevState,
+      [listId]: { key, direction },
+    }));
+
+    const updatedLists = lists.map((list) => {
+      if (list.id === listId) {
+        const sortedItems = [...list.items].sort((a, b) => {
+          let aValue = a[key];
+          let bValue = b[key];
+
+          if (direction === "descending") {
+            return aValue < bValue ? 1 : -1;
+          }
+          return aValue < bValue ? -1 : 1;
+        });
+        return { ...list, items: sortedItems };
+      }
+      return list;
+    });
+
+    setLists(updatedLists);
+  };
+
+  const getChildSortIcon = (listId, key) => {
+    const currentConfig = childSortConfig[listId] || { key: "", direction: "ascending" };
+    if (currentConfig.key === key) {
+      return currentConfig.direction === "ascending" ? (
         <KeyboardArrowUpIcon />
       ) : (
         <KeyboardArrowDownIcon />
@@ -154,7 +197,12 @@ const AllListsPage = () => {
                         <table className="list_items_table">
                           <thead>
                             <tr>
-                              <th>Item</th>
+                              <th
+                                onClick={() => handleChildSort(listKey, "name")}
+                                style={{ cursor: "pointer" }}
+                              >
+                                Item {getChildSortIcon(listKey, "name")}
+                              </th>
                             </tr>
                           </thead>
                           <tbody>

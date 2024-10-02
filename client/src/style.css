@@ -207,3 +207,7 @@ table.order_purchases_lst > thead > tr > th > svg {
   position: absolute;
   margin-top: -6px;
 }
+
+tr.list-enter-done > td {
+  padding: 30px;
+}

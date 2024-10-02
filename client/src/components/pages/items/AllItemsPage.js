@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import ClearIcon from "@mui/icons-material/Clear";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 const AllItemsPage = () => {
   const [items, setItems] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const [groupBy, setGroupBy] = useState("");
-  const [sortedField, setSortedField] = useState(null);
-  const [isReversedSort, setIsReversedSort] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "ascending" });
 
   useEffect(() => {
     const savedCartItems = localStorage.getItem("cartItems");
@@ -42,6 +43,37 @@ const AllItemsPage = () => {
     setCartItems(cartItems.filter((item) => item.id !== itemId));
   };
 
+  const handleSort = (key) => {
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+
+    const sortedItems = [...items].sort((a, b) => {
+      let aValue = a[key];
+      let bValue = b[key];
+
+      if (direction === "descending") {
+        return aValue < bValue ? 1 : -1;
+      }
+      return aValue < bValue ? -1 : 1;
+    });
+
+    setItems(sortedItems);
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "ascending" ? (
+        <KeyboardArrowUpIcon />
+      ) : (
+        <KeyboardArrowDownIcon />
+      );
+    }
+    return null;
+  };
+
   const groupCartItems = (items, groupBy) => {
     if (!groupBy) return { "": items };
 
@@ -59,40 +91,6 @@ const AllItemsPage = () => {
 
   const groupedCartItems = groupCartItems(cartItems, groupBy);
 
-  const handleSortClick = (field) => {
-    if (sortedField === field) {
-      setIsReversedSort(!isReversedSort);
-    } else {
-      setSortedField(field);
-      setIsReversedSort(false);
-    }
-  };
-
-  const sortedItems = [...items];
-  if (sortedField !== null) {
-    sortedItems.sort((a, b) => {
-      if (a[sortedField] < b[sortedField]) {
-        return -1;
-      }
-      if (a[sortedField] > b[sortedField]) {
-        return 1;
-      }
-      return 0;
-    });
-
-    if (isReversedSort) {
-      sortedItems.reverse();
-    }
-  }
-
-  const sortButton = (field) => {
-    return (
-      <button onClick={() => handleSortClick(field)}>
-        {sortedField === field && isReversedSort ? "▾" : "▴"}
-      </button>
-    );
-  };
-
   return (
     <div style={{ display: "flex" }}>
       <div style={{ width: "70%" }}>
@@ -100,46 +98,37 @@ const AllItemsPage = () => {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
+              <th>
                 Add to Cart
               </th>
-              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
+              <th>
                 Image
               </th>
-              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
-                Item Name {sortButton("name")}
+              <th onClick={() => handleSort("name")}>
+                Item Name {getSortIcon("name")}
               </th>
-              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
-                Category
-                {sortButton("category")}
+              <th onClick={() => handleSort("category")}>
+                Category {getSortIcon("category")}
               </th>
-              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
-                Group
-                {sortButton("group")}
+              <th onClick={() => handleSort("group")}>
+                Group {getSortIcon("group")}
               </th>
-              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
-                Form
-                {sortButton("form")}
+              <th onClick={() => handleSort("form")}>
+                Form {getSortIcon("form")}
               </th>
-              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
-                Department
-                {sortButton("department")}
+              <th onClick={() => handleSort("department")}>
+                Department {getSortIcon("department")}
               </th>
-              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
-                Count
-              </th>
-              <th style={{ border: "1px solid #ccc", padding: "10px" }}>
-                Size
-              </th>
+              <th>Count</th>
+              <th>Size</th>
             </tr>
           </thead>
           <tbody>
-            {sortedItems.map((item) => (
+            {items.map((item) => (
               <tr key={item.id}>
                 <td
                   style={{
-                    border: "1px solid #ccc",
-                    padding: "10px",
+                    
                     textAlign: "center",
                   }}
                 >
@@ -151,8 +140,7 @@ const AllItemsPage = () => {
                 </td>
                 <td
                   style={{
-                    border: "1px solid #ccc",
-                    padding: "10px",
+                    
                     textAlign: "center",
                   }}
                 >
@@ -168,25 +156,25 @@ const AllItemsPage = () => {
                     />
                   ) : null}
                 </td>
-                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                <td>
                   <Link to={`/items/${item.id}`}>{item.name}</Link>
                 </td>
-                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                <td>
                   {item.category}
                 </td>
-                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                <td>
                   {item.group}
                 </td>
-                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                <td>
                   {item.form}
                 </td>
-                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                <td>
                   {item.department}
                 </td>
-                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                <td>
                   {item.count}
                 </td>
-                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                <td>
                   {item.size}
                 </td>
               </tr>
@@ -196,7 +184,7 @@ const AllItemsPage = () => {
       </div>
 
       <div
-        style={{ width: "30%", padding: "20px", borderLeft: "1px solid #ccc" }}
+        style={{ width: "30%", padding: "20px" }}
       >
         <h2>Shopping Cart</h2>
 
@@ -205,7 +193,7 @@ const AllItemsPage = () => {
           id="groupBy"
           value={groupBy}
           onChange={(e) => setGroupBy(e.target.value)}
-          style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+          style={{ width: "100%",  marginBottom: "10px" }}
         >
           <option value="">None</option>
           <option value="Category">Category</option>
