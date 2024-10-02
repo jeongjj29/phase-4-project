@@ -267,20 +267,22 @@ def get_list(id):
     return make_response(lst.to_dict_with_items())
 
 
-@api_bp.route('/api/orders', methods=['POST'])
+@api_bp.route("/api/orders", methods=["POST"])
 def create_order():
     data = request.json
-    created_at_str = data.get('created_at')
-    items = data.get('items')
-    store_name = data.get('store_name')
+    created_at_str = data.get("created_at")
+    items = data.get("items")
+    store_name = data.get("store_name")
 
     if not created_at_str or not items or not store_name:
-        return jsonify({"error": "Created at date, items, and store name are required"}), 400
+        return make_response(
+            {"error": "Created at date, items, and store name are required"}, 400
+        )
 
     try:
         created_at = datetime.fromisoformat(created_at_str)
     except ValueError:
-        return jsonify({"error": "Invalid date format. Use YYYY-MM-DD."}), 400
+        return make_response({"error": "Invalid date format. Use YYYY-MM-DD."}, 400)
 
     store = Store.query.filter_by(name=store_name).first()
     if not store:
@@ -291,27 +293,41 @@ def create_order():
     new_order = Order(created_at=created_at, store_id=store.id)  # Set store_id here
 
     for item in items:
-        item_name = item.get('itemName')
-        price = item.get('price')
+        item_name = item.get("itemName")
+        price = item.get("price")
 
         if not item_name or price is None:
-            return jsonify({"error": "Item name and price are required for each item"}), 400
+            return make_response(
+                {"error": "Item name and price are required for each item"},
+                400,
+            )
 
         existing_item = Item.query.filter_by(name=item_name).first()
         if not existing_item:
-            new_item = Item.create(name=item_name, image_url=None, count=0, group='default', form='default', department='default', size=None, category='default')
+            new_item = Item.create(
+                name=item_name,
+                image_url=None,
+                count=0,
+                group="default",
+                form="default",
+                department="default",
+                size=None,
+                category="default",
+            )
             existing_item = new_item
 
-        item_price = ItemPrice(price=float(price), store_id=store.id, item_id=existing_item.id)
+        item_price = ItemPrice(
+            price=float(price), store_id=store.id, item_id=existing_item.id
+        )
         new_order.item_prices.append(item_price)
 
     db.session.add(new_order)
     db.session.commit()
 
-    return jsonify(new_order.to_dict_with_items()), 201
+    return make_response(new_order.to_dict_with_items(), 201)
 
 
-@api_bp.route('/api/orders', methods=['GET'])
+@api_bp.route("/api/orders", methods=["GET"])
 def handle_orders():
     orders = Order.query.all()
     order_details = []
@@ -322,37 +338,41 @@ def handle_orders():
             item_prices.append(item_price.to_dict())
 
         order_dict = order.to_dict_with_items()
-        order_dict['item_prices'] = item_prices
+        order_dict["item_prices"] = item_prices
         order_details.append(order_dict)
 
-    return jsonify(order_details)
+    return make_response(order_details)
 
-@api_bp.route('/api/orders/<int:id>', methods=['GET'])
+
+@api_bp.route("/api/orders/<int:id>", methods=["GET"])
 def get_order(id):
     order = Order.query.get_or_404(id)
     item_prices = [item_price.to_dict() for item_price in order.item_prices]
     order_dict = order.to_dict()
-    order_dict['item_prices'] = item_prices
-    return jsonify(order_dict)
+    order_dict["item_prices"] = item_prices
+    return make_response(order_dict)
+
 
 @api_bp.route("/api/items/search", methods=["GET"])
 def search_items():
-    query = request.args.get('query', '').strip()
+    query = request.args.get("query", "").strip()
     if not query:
-        return jsonify([])
+        return make_response([])
 
     items = Item.query.filter(Item.name.ilike(f"%{query}%")).all()
-    return jsonify([item.to_dict() for item in items])
+    return make_response([item.to_dict() for item in items])
+
 
 @api_bp.route("/api/stores/search", methods=["GET"])
 def search_stores():
-    query = request.args.get('query', '').strip()
+    query = request.args.get("query", "").strip()
     if not query:
-        return jsonify([])
+        return make_response([])
 
     stores = Store.query.filter(Store.name.ilike(f"%{query}%")).all()
-    
-    return jsonify([store.to_dict() for store in stores])
+
+    return make_response([store.to_dict() for store in stores])
+
 
 from config import app
 
