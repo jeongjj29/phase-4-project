@@ -13,9 +13,7 @@ const PurchaseDetailPage = () => {
   useEffect(() => {
     const fetchPurchaseDetails = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3001/api/purchases/${id}`
-        );
+        const response = await axios.get(`/api/purchases/${id}`);
         setPurchase(response.data);
       } catch (err) {
         setError("Error fetching purchase details");
@@ -29,7 +27,7 @@ const PurchaseDetailPage = () => {
   }, [id]);
 
   const handleClick = () => {
-    fetch(`http://localhost:3001/api/purchases/${id}`, {
+    fetch(`/api/purchases/${id}`, {
       method: "DELETE",
     })
       .catch((err) => console.error("Error deleting purchase:", err))

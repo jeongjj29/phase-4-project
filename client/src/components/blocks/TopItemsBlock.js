@@ -6,7 +6,7 @@ const TopItemsBlock = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/api/items/top5")
+      .get("/api/items/top5")
       .then((res) => {
         setItems(res.data);
       })

@@ -6,7 +6,7 @@ const PurchaseHistoryBlock = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/api/item_prices/most_recent5")
+      .get("/api/item_prices/most_recent5")
       .then((res) => {
         setPurchases(res.data);
       })

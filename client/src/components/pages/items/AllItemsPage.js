@@ -17,7 +17,7 @@ const AllItemsPage = () => {
     }
 
     axios
-      .get("http://localhost:3001/api/items")
+      .get("/api/items")
       .then((response) => {
         setItems(response.data);
       })

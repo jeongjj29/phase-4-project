@@ -6,7 +6,7 @@ const PurchasesByStoreBlock = ({ id, name }) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/api/stores/${id}/purchases`)
+      .get(`/api/stores/${id}/purchases`)
       .then((res) => {
         setPurchases(res.data);
       })
