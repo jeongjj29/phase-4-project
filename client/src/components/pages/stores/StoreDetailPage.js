@@ -31,6 +31,7 @@ const StoreDetailPage = () => {
       <h1>Store: {store.name}</h1>
       <PurchasesByStoreBlock id={store.id} name={store.name} />
       <ItemsByStoreBlock id={store.id} name={store.name} />
+      <button onClick={handleClick}>Delete</button>
     </div>
   );
 };
