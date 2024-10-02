@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const OrderDetailPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const location = useLocation();
 
   useEffect(() => {
     const fetchOrders = async () => {
       const params = new URLSearchParams(location.search);
-      const store = params.get('store');
-      const date = params.get('date');
+      const store = params.get("store");
+      const date = params.get("date");
 
       try {
-        const response = await fetch(`http://localhost:3001/api/order?store=${store}&date=${date}`);
+        const response = await fetch(`/api/order?store=${store}&date=${date}`);
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         const data = await response.json();
         setOrders(data);
       } catch (err) {
-        setError('Error fetching orders');
+        setError("Error fetching orders");
         console.error(err);
       } finally {
         setLoading(false);

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CreateOrderPage = () => {
-  const [itemName, setItemName] = useState('');
+  const [itemName, setItemName] = useState("");
   const [quantity, setQuantity] = useState(0);
   const navigate = useNavigate();
 
@@ -15,22 +15,22 @@ const CreateOrderPage = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3001/api/orders', {
-        method: 'POST',
+      const response = await fetch("/api/orders", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(newOrder),
       });
 
       if (response.ok) {
         // Redirect to the All Orders Page after successful creation
-        navigate('/orders');
+        navigate("/orders");
       } else {
-        console.error('Failed to create order:', response.statusText);
+        console.error("Failed to create order:", response.statusText);
       }
     } catch (error) {
-      console.error('Error creating order:', error);
+      console.error("Error creating order:", error);
     }
   };
 

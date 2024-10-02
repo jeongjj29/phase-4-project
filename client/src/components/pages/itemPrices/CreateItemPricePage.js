@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
 
 const ItemPriceSchema = Yup.object().shape({
-  price: Yup.number().min(0, "Price must be a positive number").required("Price is required"),
+  price: Yup.number()
+    .min(0, "Price must be a positive number")
+    .required("Price is required"),
   store_id: Yup.number().required("Store is required"),
   item_id: Yup.number().required("Item is required"),
 });
@@ -14,23 +16,26 @@ const CreateItemPricePage = () => {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/api/stores')
+    axios
+      .get("/api/stores")
       .then((response) => setStores(response.data))
-      .catch((error) => console.error('Error fetching stores:', error));
+      .catch((error) => console.error("Error fetching stores:", error));
 
-    axios.get('http://localhost:3001/api/items')
+    axios
+      .get("/api/items")
       .then((response) => setItems(response.data))
-      .catch((error) => console.error('Error fetching items:', error));
+      .catch((error) => console.error("Error fetching items:", error));
   }, []);
 
   return (
     <div>
       <h1>Create Purchase</h1>
       <Formik
-        initialValues={{ price: '', store_id: '', item_id: '' }}
+        initialValues={{ price: "", store_id: "", item_id: "" }}
         validationSchema={ItemPriceSchema}
         onSubmit={(values, { setSubmitting, resetForm }) => {
-          axios.post('http://localhost:3001/api/item_prices/create', values)
+          axios
+            .post("/api/purchases", values)
             .then((response) => {
               console.log("Item price created:", response.data);
               resetForm();

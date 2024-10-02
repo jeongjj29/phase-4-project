@@ -7,7 +7,7 @@ const ItemsByStoreBlock = ({ id, name }) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/api/stores/${id}/items`)
+      .get(`/api/stores/${id}/items`)
       .then((res) => {
         setItems(res.data);
       })

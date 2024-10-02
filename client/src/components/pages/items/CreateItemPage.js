@@ -17,21 +17,21 @@ const CreateItemPage = () => {
       <h2>Create a New Item</h2>
       <Formik
         initialValues={{
-          name: '',
-          image_url: '',
-          group: '',
-          form: '',
-          department: '',
-          size: '',
-          category: '',
-          count: '',
+          name: "",
+          image_url: "",
+          group: "",
+          form: "",
+          department: "",
+          size: "",
+          category: "",
+          count: "",
         }}
         validationSchema={ItemSchema}
         onSubmit={(values) => {
-          fetch('http://localhost:3001/api/items', {
-            method: 'POST',
+          fetch("/api/items", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify(values),
           })
@@ -43,7 +43,6 @@ const CreateItemPage = () => {
               console.error("There was an error creating the item!", error);
             });
         }}
-        
       >
         {({ values }) => (
           <Form>
@@ -63,17 +62,17 @@ const CreateItemPage = () => {
               <ErrorMessage name="count" component="div" />
             </div>
             <div>
-            <label htmlFor="category">Category</label>
-            <Field as="select" name="category">
-              <option value="">Select a category</option>
-              <option value="Dairy">Dairy</option>
+              <label htmlFor="category">Category</label>
+              <Field as="select" name="category">
+                <option value="">Select a category</option>
+                <option value="Dairy">Dairy</option>
                 <option value="Fruits/Vege.">Fruits/Vege.</option>
                 <option value="Grains">Grains</option>
                 <option value="Proteins">Proteins</option>
                 <option value="Others">Others</option>
-            </Field>
-            <ErrorMessage name="category" component="div" />
-          </div>
+              </Field>
+              <ErrorMessage name="category" component="div" />
+            </div>
 
             <div>
               <label htmlFor="group">Group</label>

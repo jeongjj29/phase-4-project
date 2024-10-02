@@ -5,7 +5,7 @@ const AllStoresPage = () => {
   const [stores, setStores] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/stores")
+    fetch("/api/stores")
       .then((response) => response.json())
       .then((data) => setStores(data))
       .catch((error) => console.error("Error fetching stores:", error));

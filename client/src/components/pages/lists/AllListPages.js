@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
-import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { CSSTransition } from 'react-transition-group';
-import './AllListStyle.css';
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
+import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { CSSTransition } from "react-transition-group";
+import "./AllListStyle.css";
 
 const AllListsPage = () => {
   const [lists, setLists] = useState([]);
@@ -14,21 +14,24 @@ const AllListsPage = () => {
   const [error, setError] = useState(null);
   const [visibleItems, setVisibleItems] = useState({});
   const [showAllItems, setShowAllItems] = useState(false);
-  const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
-  
+  const [sortConfig, setSortConfig] = useState({
+    key: "",
+    direction: "ascending",
+  });
+
   const nodeRefs = useRef({});
 
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/lists');
+        const response = await fetch("/api/lists");
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         const data = await response.json();
         setLists(data);
       } catch (err) {
-        setError('Error fetching lists');
+        setError("Error fetching lists");
         console.error(err);
       } finally {
         setLoading(false);
@@ -55,9 +58,9 @@ const AllListsPage = () => {
   };
 
   const handleSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
     }
     setSortConfig({ key, direction });
 
@@ -65,7 +68,7 @@ const AllListsPage = () => {
       let aValue = a[key];
       let bValue = b[key];
 
-      if (direction === 'descending') {
+      if (direction === "descending") {
         return aValue < bValue ? 1 : -1;
       }
       return aValue < bValue ? -1 : 1;
@@ -76,7 +79,11 @@ const AllListsPage = () => {
 
   const getSortIcon = (key) => {
     if (sortConfig.key === key) {
-      return sortConfig.direction === 'ascending' ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />;
+      return sortConfig.direction === "ascending" ? (
+        <KeyboardArrowUpIcon />
+      ) : (
+        <KeyboardArrowDownIcon />
+      );
     }
     return null;
   };
@@ -90,19 +97,23 @@ const AllListsPage = () => {
       <table>
         <thead>
           <tr>
-            <th className='list_toggle_th'>
+            <th className="list_toggle_th">
               <button onClick={toggleAllItemsVisibility}>
                 {showAllItems ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
               </button>
             </th>
-            <th className='list_title_th' onClick={() => handleSort('title')} style={{ cursor: 'pointer' }}>
-              Title {getSortIcon('title')}
+            <th
+              className="list_title_th"
+              onClick={() => handleSort("title")}
+              style={{ cursor: "pointer" }}
+            >
+              Title {getSortIcon("title")}
             </th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-        {lists.map((list) => {
+          {lists.map((list) => {
             const listKey = list.id;
 
             if (!nodeRefs.current[listKey]) {
@@ -114,10 +125,14 @@ const AllListsPage = () => {
                 <tr>
                   <td>
                     <button onClick={() => toggleItemsVisibility(listKey)}>
-                      {visibleItems[listKey] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                      {visibleItems[listKey] ? (
+                        <KeyboardArrowUpIcon />
+                      ) : (
+                        <KeyboardArrowDownIcon />
+                      )}
                     </button>
                   </td>
-                  <td className='list-title'>
+                  <td className="list-title">
                     <Link to={`/lists/${list.id}`}>{list.title}</Link>
                   </td>
                   <td className="view-list-btn">
@@ -133,7 +148,7 @@ const AllListsPage = () => {
                   unmountOnExit
                   nodeRef={nodeRefs.current[listKey]}
                 >
-                  <tr className='list_items' ref={nodeRefs.current[listKey]}>
+                  <tr className="list_items" ref={nodeRefs.current[listKey]}>
                     <td colSpan={3}>
                       {list.items.length > 0 ? (
                         <table className="list_items_table">
@@ -146,7 +161,9 @@ const AllListsPage = () => {
                             {list.items.map((item) => (
                               <tr key={item.id}>
                                 <td>
-                                  <Link to={`/items/${item.id}`}>{item.name}</Link>
+                                  <Link to={`/items/${item.id}`}>
+                                    {item.name}
+                                  </Link>
                                 </td>
                               </tr>
                             ))}
@@ -161,7 +178,6 @@ const AllListsPage = () => {
               </React.Fragment>
             );
           })}
-          
         </tbody>
       </table>
     </div>

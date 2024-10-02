@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 const AllItemPricesPage = () => {
   const [itemPrices, setItemPrices] = useState([]);
@@ -10,10 +10,10 @@ const AllItemPricesPage = () => {
   useEffect(() => {
     const fetchItemPrices = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/purchases'); // Ensure this route returns item prices directly
+        const response = await axios.get("/api/purchases"); // Ensure this route returns item prices directly
         setItemPrices(response.data);
       } catch (err) {
-        setError('Error fetching item prices');
+        setError("Error fetching item prices");
         console.error(err);
       } finally {
         setLoading(false);
@@ -46,10 +46,14 @@ const AllItemPricesPage = () => {
                 <Link to={`/purchases/${itemPrice.id}`}>View Purchase</Link>
               </td>
               <td>
-                <Link to={`/stores/${itemPrice.store.id}`}>{itemPrice.store.name}</Link>
+                <Link to={`/stores/${itemPrice.store.id}`}>
+                  {itemPrice.store.name}
+                </Link>
               </td>
               <td>
-                <Link to={`/items/${itemPrice.item.id}`}>{itemPrice.item.name}</Link>
+                <Link to={`/items/${itemPrice.item.id}`}>
+                  {itemPrice.item.name}
+                </Link>
               </td>
               <td>${itemPrice.price.toFixed(2)}</td>
               <td>{new Date(itemPrice.created_at).toLocaleDateString()}</td>

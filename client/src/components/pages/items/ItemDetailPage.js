@@ -9,14 +9,14 @@ const ItemDetailPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:3001/api/items/${id}`)
+    fetch(`/api/items/${id}`)
       .then((response) => response.json())
       .then((data) => setItem(data))
       .catch((err) => console.error("Error fetching item:", err));
   }, [id]);
 
   const handleDelete = () => {
-    fetch(`http://localhost:3001/api/items/${id}`, {
+    fetch(`/api/items/${id}`, {
       method: "DELETE",
     })
       .catch((err) => console.error("Error deleting item:", err))

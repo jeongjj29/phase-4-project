@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom'; // Import Link
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom"; // Import Link
 
 const ItemPricesByItemBlock = ({ item_id }) => {
   const [itemPrices, setItemPrices] = useState([]);
@@ -10,7 +10,7 @@ const ItemPricesByItemBlock = ({ item_id }) => {
   useEffect(() => {
     const fetchItemPrices = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/item_prices/item/${item_id}`);
+        const response = await axios.get(`/api/purchases/item/${item_id}`);
         setItemPrices(response.data);
       } catch (err) {
         setError(err.message);
@@ -37,7 +37,7 @@ const ItemPricesByItemBlock = ({ item_id }) => {
           </tr>
         </thead>
         <tbody>
-          {itemPrices.map(price => (
+          {itemPrices.map((price) => (
             <tr key={price.id}>
               <td>${price.price}</td>
               <td>

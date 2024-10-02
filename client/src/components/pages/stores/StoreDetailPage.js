@@ -10,14 +10,14 @@ const StoreDetailPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:3001/api/stores/${id}`)
+    fetch(`/api/stores/${id}`)
       .then((response) => response.json())
       .then((data) => setStore(data))
       .catch((err) => console.error("Error fetching store:", err));
   }, [id]);
 
   const handleClick = () => {
-    fetch(`http://localhost:3001/api/stores/${id}`, {
+    fetch(`/api/stores/${id}`, {
       method: "DELETE",
     })
       .catch((err) => console.error("Error deleting store:", err))
@@ -29,8 +29,9 @@ const StoreDetailPage = () => {
   return (
     <div>
       <h1>Store: {store.name}</h1>
-      <PurchasesByStoreBlock />
-      <ItemsByStoreBlock />
+      <PurchasesByStoreBlock id={store.id} name={store.name} />
+      <ItemsByStoreBlock id={store.id} name={store.name} />
+      <button onClick={handleClick}>Delete</button>
     </div>
   );
 };
