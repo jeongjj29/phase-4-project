@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const OrderDetailsPage = () => {
   const { id } = useParams();
@@ -24,6 +24,9 @@ const OrderDetailsPage = () => {
       {order ? (
         <div>
           <h1>Order Details</h1>
+          <Link to={`/orders/${id}/edit`} className="btn">
+        Edit
+      </Link>
           <p>ID: {order.id}</p>
           <p>Created At: {new Date(order.created_at).toLocaleString()}</p>
           <h2>Item Prices</h2>

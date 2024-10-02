@@ -33,6 +33,9 @@ const ListDetailsPage = () => {
   return (
     <div>
       <h1>List: {list?.title || "List Details"}</h1>
+      <Link to={`/lists/${id}/edit`} className="btn">
+        Edit
+      </Link>
       {list?.items?.length === 0 ? (
         <div>No items found in this list.</div>
       ) : (
