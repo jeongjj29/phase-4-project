@@ -29,8 +29,8 @@ const StoreDetailPage = () => {
   return (
     <div>
       <h1>Store: {store.name}</h1>
-      <PurchasesByStoreBlock />
-      <ItemsByStoreBlock />
+      <PurchasesByStoreBlock id={store.id} name={store.name} />
+      <ItemsByStoreBlock id={store.id} name={store.name} />
     </div>
   );
 };
