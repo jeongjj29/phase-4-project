@@ -10,7 +10,7 @@ const ItemPricesByItemBlock = ({ item_id }) => {
   useEffect(() => {
     const fetchItemPrices = async () => {
       try {
-        const response = await axios.get(`/api/item_prices/item/${item_id}`);
+        const response = await axios.get(`/api/purchases/item/${item_id}`);
         setItemPrices(response.data);
       } catch (err) {
         setError(err.message);

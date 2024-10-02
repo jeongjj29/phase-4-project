@@ -1,5 +1,5 @@
 from sqlalchemy import func
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, make_response, request
 from models import Store, Item, ItemPrice, List, Order
 from config import db
 from datetime import datetime
@@ -7,114 +7,57 @@ from datetime import datetime
 api_bp = Blueprint("api", __name__)
 
 
+# Test Route
 @api_bp.route("/api/test", methods=["GET"])
 def test():
-    return jsonify({"message": "Test Successful!"})
+    return make_response({"message": "Test Successful!"})
 
 
+# Store Routes
 @api_bp.route("/api/stores", methods=["GET"])
-def get_all_stores():
-    stores = Store.query.all()
-    return jsonify([store.to_dict() for store in stores])
+def handle_stores():
+    if request.method == "GET":
+        stores = Store.query.all()
+        return make_response([store.to_dict() for store in stores])
+
+    elif request.method == "POST":
+        data = request.get_json()
+        if "name" not in data or len(data["name"]) < 3:
+            return (
+                make_response(
+                    {"error": "Store name must be at least 3 characters long"}
+                ),
+                400,
+            )
+        new_store = Store(name=data["name"])
+        db.session.add(new_store)
+        db.session.commit()
+        return make_response(new_store.to_dict(), 201)
+
+    elif request.method == "OPTIONS":
+        return make_response({"status": "OK"}, 200)
 
 
-@api_bp.route("/api/stores/<int:id>", methods=["GET", "DELETE"])
-def get_store(id):
+@api_bp.route("/api/stores/<int:id>", methods=["GET", "PUT", "DELETE"])
+def handle_store(id):
     if request.method == "GET":
         store = Store.query.get_or_404(id)
-        return jsonify(store.to_dict())
+        return make_response(store.to_dict())
+
+    elif request.method == "PUT":
+        data = request.get_json()
+        store = Store.query.get_or_404(id)
+        for key, value in data.items():
+            setattr(store, key, value)
+        db.session.add(store)
+        db.session.commit()
+        return make_response(store.to_dict())
+
     elif request.method == "DELETE":
         store = Store.query.get_or_404(id)
         db.session.delete(store)
         db.session.commit()
-        return jsonify({}), 204
-
-
-@api_bp.route("/api/stores/create", methods=["POST", "OPTIONS"])
-def create_store():
-    if request.method == "OPTIONS":
-        return jsonify({"status": "OK"}), 200
-
-    data = request.get_json()
-    if "name" not in data or len(data["name"]) < 3:
-        return jsonify({"error": "Store name must be at least 3 characters long"}), 400
-
-    new_store = Store(name=data["name"])
-    db.session.add(new_store)
-    db.session.commit()
-
-    return jsonify(new_store.to_dict()), 201
-
-
-@api_bp.route("/api/items", methods=["GET"])
-def get_all_items():
-    items = Item.query.all()
-    return jsonify([item.to_dict() for item in items])
-
-
-@api_bp.route('/api/items', methods=['POST'])
-def create_item():
-    data = request.get_json()
-    new_item = Item.create(
-        name=data.get('name'),
-        image_url=data.get('image_url'),
-        group=data.get('group'),
-        form=data.get('form'),
-        count=data.get('count'),
-        department=data.get('department'),
-        size=data.get('size'),
-        category=data.get('category'),
-    )
-    return jsonify(new_item.to_dict()), 201
-
-@api_bp.route("/api/purchases", methods=["GET"])
-def get_all_item_prices():
-    item_prices = ItemPrice.get_all_item_prices()
-    return jsonify(item_prices)
-
-
-@api_bp.route("/api/item_prices/create", methods=["POST", "OPTIONS"])
-def create_item_price():
-    if request.method == "OPTIONS":
-        return jsonify({"status": "OK"}), 200
-
-    data = request.get_json()
-
-    if "price" not in data or "store_id" not in data or "item_id" not in data:
-        return jsonify({"error": "Missing required fields"}), 400
-
-    new_item_price = ItemPrice(
-        price=data["price"], store_id=data["store_id"], item_id=data["item_id"]
-    )
-
-    db.session.add(new_item_price)
-    db.session.commit()
-
-    return jsonify(new_item_price.to_dict()), 201
-
-
-@api_bp.route("/api/items/<int:id>", methods=["GET", "DELETE"])
-def get_item(id):
-    if request.method == "GET":
-        item = Item.query.get_or_404(id)
-        return jsonify(item.to_dict())
-    elif request.method == "DELETE":
-        item = Item.query.get_or_404(id)
-        db.session.delete(item)
-        db.session.commit()
-        return jsonify({}), 204
-
-
-@api_bp.route("/api/purchases/<int:id>", methods=["GET", "DELETE"])
-def get_item_price(id):
-    if request.method == "GET":
-        item_price = ItemPrice.query.get_or_404(id)
-        return jsonify(item_price.to_dict())
-    elif request.method == "DELETE":
-        item_price = ItemPrice.query.get_or_404(id)
-        db.session.delete(item_price)
-        db.session.commit()
-        return jsonify({}), 204
+        return make_response({}, 204)
 
 
 @api_bp.route("/api/stores/top5", methods=["GET"])
@@ -135,7 +78,42 @@ def get_top5_stores():
         for store in top5_stores
     ]
 
-    return jsonify(top5_stores_dict)
+    return make_response(top5_stores_dict)
+
+
+# Item Routes
+@api_bp.route("/api/items", methods=["GET"])
+def handle_items():
+    if request.method == "GET":
+        items = [item.to_dict() for item in Item.query.all()]
+        return make_response(items)
+
+    elif request.method == "POST":
+        data = request.get_json()
+        new_item = Item.create(
+            name=data.get("name"),
+            image_url=data.get("image_url"),
+            group=data.get("group"),
+            form=data.get("form"),
+            count=data.get("count"),
+            department=data.get("department"),
+            size=data.get("size"),
+            category=data.get("category"),
+        )
+        return make_response(new_item.to_dict(), 201)
+
+
+@api_bp.route("/api/items/<int:id>", methods=["GET", "DELETE"])
+def handle_item(id):
+    if request.method == "GET":
+        item = Item.query.get_or_404(id)
+        return make_response(item.to_dict())
+
+    elif request.method == "DELETE":
+        item = Item.query.get_or_404(id)
+        db.session.delete(item)
+        db.session.commit()
+        return make_response({}, 204)
 
 
 @api_bp.route("/api/items/top5", methods=["GET"])
@@ -156,10 +134,48 @@ def get_top5_items():
         for item in top5_items
     ]
 
-    return jsonify(top5_items_dict)
+    return make_response(top5_items_dict)
 
 
-@api_bp.route("/api/item_prices/most_recent5", methods=["GET"])
+# Purchase Routes
+@api_bp.route("/api/purchases", methods=["GET", "POST", "OPTIONS"])
+def handle_purchases():
+    if request.method == "GET":
+        item_prices = ItemPrice.get_all_item_prices()
+        return make_response(item_prices)
+
+    elif request.method == "POST":
+        data = request.get_json()
+
+        if "price" not in data or "store_id" not in data or "item_id" not in data:
+            return make_response({"error": "Missing required fields"}, 400)
+
+        new_item_price = ItemPrice(
+            price=data["price"], store_id=data["store_id"], item_id=data["item_id"]
+        )
+
+        db.session.add(new_item_price)
+        db.session.commit()
+
+        return make_response(new_item_price.to_dict(), 201)
+
+    elif request.method == "OPTIONS":
+        return make_response({"status": "OK"}, 200)
+
+
+@api_bp.route("/api/purchases/<int:id>", methods=["GET", "DELETE"])
+def handle_purchase(id):
+    if request.method == "GET":
+        item_price = ItemPrice.query.get_or_404(id)
+        return make_response(item_price.to_dict())
+    elif request.method == "DELETE":
+        item_price = ItemPrice.query.get_or_404(id)
+        db.session.delete(item_price)
+        db.session.commit()
+        return make_response({}), 204
+
+
+@api_bp.route("/api/purchases/most_recent5", methods=["GET"])
 def get_most_recent_item_prices():
     recent_item_prices = (
         db.session.query(
@@ -187,45 +203,49 @@ def get_most_recent_item_prices():
         for item_price in recent_item_prices
     ]
 
-    return jsonify(recent_item_prices_dict)
+    return make_response(recent_item_prices_dict)
 
 
-@api_bp.route("/api/item_prices/item/<int:item_id>", methods=["GET"])
-def get_item_prices_by_item(item_id):
+@api_bp.route("/api/purchases/item/<int:item_id>", methods=["GET"])
+def get_purchases_by_item(item_id):
     item_prices = ItemPrice.get_item_prices_by_item_id(item_id)
-    return jsonify(item_prices)
+    return make_response(item_prices)
+
 
 @api_bp.route("/api/stores/<int:id>/items", methods=["GET"])
 def get_store_items(id):
     store = Store.query.get_or_404(id)
-    return jsonify([item.to_dict() for item in store.items])
+    return make_response([item.to_dict() for item in store.items])
 
 
 @api_bp.route("/api/stores/<int:id>/purchases", methods=["GET"])
 def get_store_purchases(id):
     store = Store.query.get_or_404(id)
-    return jsonify(
+    return make_response(
         [
             item_price.to_dict(rules=("-store", "-store_id", "-item_id", "-updated_at"))
             for item_price in store.item_prices
         ]
     )
 
+
 @api_bp.route("/api/items/<int:id>/stores", methods=["GET"])
 def get_item_stores(id):
     item = Item.query.get_or_404(id)
-    return jsonify([store.to_dict() for store in item.stores])
+    return make_response([store.to_dict() for store in item.stores])
+
 
 @api_bp.route("/api/lists", methods=["GET"])
 def get_all_lists():
     lists = List.query.all()
-    return jsonify([lst.to_dict_with_items() for lst in lists])
+    return make_response([lst.to_dict_with_items() for lst in lists])
+
 
 @api_bp.route("/api/lists", methods=["POST"])
 def create_list():
     data = request.get_json()
-    title = data.get('title')
-    item_ids = data.get('items')
+    title = data.get("title")
+    item_ids = data.get("items")
 
     new_list = List(title=title)
 
@@ -237,41 +257,45 @@ def create_list():
     db.session.add(new_list)
     db.session.commit()
 
-    return jsonify(new_list.to_dict()), 201
+    return make_response(new_list.to_dict()), 201
+
 
 @api_bp.route("/api/lists/<int:id>", methods=["GET"])
 def get_list(id):
     lst = List.query.get_or_404(id)
 
-    return jsonify(lst.to_dict_with_items())
+    return make_response(lst.to_dict_with_items())
 
-@api_bp.route('/api/orders', methods=['POST'])
+
+@api_bp.route("/api/orders", methods=["POST"])
 def create_order():
     data = request.json
-    item_name = data.get('item_name')
-    quantity = data.get('quantity')
+    item_name = data.get("item_name")
+    quantity = data.get("quantity")
 
     if not item_name or quantity is None:
-        return jsonify({"error": "Item name and quantity are required"}), 400
+        return make_response({"error": "Item name and quantity are required"}), 400
 
     new_order = Order.create(item_name=item_name, quantity=quantity)
-    return jsonify(new_order.to_dict()), 201
+    return make_response(new_order.to_dict()), 201
 
 
-@api_bp.route('/api/orders', methods=['GET', 'POST'])
+@api_bp.route("/api/orders", methods=["GET", "POST"])
 def handle_orders():
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.get_json()
-        new_order = Order.create(item_name=data['item_name'], quantity=data['quantity'])
-        return jsonify(new_order.to_dict()), 201
+        new_order = Order.create(item_name=data["item_name"], quantity=data["quantity"])
+        return make_response(new_order.to_dict()), 201
 
     orders = Order.query.all()
-    return jsonify([order.to_dict() for order in orders])
+    return make_response([order.to_dict() for order in orders])
 
-@api_bp.route('/api/orders/<int:id>', methods=['GET'])
+
+@api_bp.route("/api/orders/<int:id>", methods=["GET"])
 def get_order(id):
     order = Order.query.get_or_404(id)
-    return jsonify(order.to_dict())
+    return make_response(order.to_dict())
+
 
 from config import app
 

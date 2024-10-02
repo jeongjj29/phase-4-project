@@ -18,7 +18,7 @@ const CreateStoreForm = () => {
         validationSchema={StoreSchema}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           axios
-            .post("/api/stores/create", values)
+            .post("/api/stores", values)
             .then((response) => {
               console.log("Store created:", response.data);
               resetForm();

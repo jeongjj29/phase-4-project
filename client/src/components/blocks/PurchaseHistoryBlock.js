@@ -6,7 +6,7 @@ const PurchaseHistoryBlock = () => {
 
   useEffect(() => {
     axios
-      .get("/api/item_prices/most_recent5")
+      .get("/api/purchases/most_recent5")
       .then((res) => {
         setPurchases(res.data);
       })

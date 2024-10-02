@@ -35,7 +35,7 @@ const CreateItemPricePage = () => {
         validationSchema={ItemPriceSchema}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           axios
-            .post("/api/item_prices/create", values)
+            .post("/api/purchases", values)
             .then((response) => {
               console.log("Item price created:", response.data);
               resetForm();

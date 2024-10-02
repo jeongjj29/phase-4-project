@@ -7,7 +7,7 @@ const ItemPriceDetailPage = () => {
   const [itemPrice, setItemPrice] = useState(null);
 
   useEffect(() => {
-    fetch(`/api/item_prices/${id}`)
+    fetch(`/api/purchases/${id}`)
       .then((response) => response.json())
       .then((data) => setItemPrice(data))
       .catch((err) => console.error("Error fetching item price:", err));
