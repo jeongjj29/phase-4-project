@@ -14,7 +14,7 @@ def test():
 
 
 # Store Routes
-@api_bp.route("/api/stores", methods=["GET"])
+@api_bp.route("/api/stores", methods=["GET", "POST", "OPTIONS"])
 def handle_stores():
     if request.method == "GET":
         stores = Store.query.all()
@@ -82,7 +82,7 @@ def get_top5_stores():
 
 
 # Item Routes
-@api_bp.route("/api/items", methods=["GET"])
+@api_bp.route("/api/items", methods=["GET", "POST"])
 def handle_items():
     if request.method == "GET":
         items = [item.to_dict() for item in Item.query.all()]
@@ -103,10 +103,19 @@ def handle_items():
         return make_response(new_item.to_dict(), 201)
 
 
-@api_bp.route("/api/items/<int:id>", methods=["GET", "DELETE"])
+@api_bp.route("/api/items/<int:id>", methods=["GET", "PUT", "DELETE"])
 def handle_item(id):
     if request.method == "GET":
         item = Item.query.get_or_404(id)
+        return make_response(item.to_dict())
+
+    elif request.method == "PUT":
+        data = request.get_json()
+        item = Item.query.get_or_404(id)
+        for key, value in data.items():
+            setattr(item, key, value)
+        db.session.add(item)
+        db.session.commit()
         return make_response(item.to_dict())
 
     elif request.method == "DELETE":
@@ -163,13 +172,13 @@ def handle_purchases():
         return make_response({"status": "OK"}, 200)
 
 
-@api_bp.route("/api/purchases/<int:id>", methods=["GET", "PATCH", "DELETE"])
+@api_bp.route("/api/purchases/<int:id>", methods=["GET", "PUT", "DELETE"])
 def handle_purchase(id):
     if request.method == "GET":
         item_price = ItemPrice.query.get_or_404(id)
         return make_response(item_price.to_dict())
 
-    elif request.method == "PATCH":
+    elif request.method == "PUT":
         data = request.get_json()
         item_price = ItemPrice.query.get_or_404(id)
         for key, value in data.items():
