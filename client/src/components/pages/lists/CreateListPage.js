@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const CreateListPage = () => {
   const [listName, setListName] = useState('');
-  const [createdAt, setCreatedAt] = useState('');
-  const [items, setItems] = useState([{ itemName: '', quantity: 0 }]);
+  const [items, setItems] = useState([{ itemName: '' }]);
   const [itemSuggestions, setItemSuggestions] = useState([[]]);
   const navigate = useNavigate();
 
@@ -12,13 +11,7 @@ const CreateListPage = () => {
     const values = [...items];
     values[index].itemName = event.target.value;
     setItems(values);
-    fetchItemSuggestions(index, event.target.value); 
-  };
-
-  const handleItemQuantityChange = (index, event) => {
-    const values = [...items];
-    values[index].quantity = event.target.value;
-    setItems(values);
+    fetchItemSuggestions(index, event.target.value);
   };
 
   const fetchItemSuggestions = async (index, query) => {
@@ -45,7 +38,7 @@ const CreateListPage = () => {
   };
 
   const handleAddItem = () => {
-    setItems([...items, { itemName: '', quantity: 0 }]);
+    setItems([...items, { itemName: '' }]);
     setItemSuggestions((prev) => [...prev, []]);
   };
 
@@ -65,8 +58,7 @@ const CreateListPage = () => {
 
     const newList = {
       name: listName,
-      created_at: createdAt,
-      items: items,
+      items: items.map(item => item.itemName), // Send only the item names
     };
 
     try {
@@ -87,7 +79,8 @@ const CreateListPage = () => {
     } catch (error) {
       console.error('Error creating list:', error);
     }
-  };
+};
+
 
   return (
     <div>
@@ -100,17 +93,6 @@ const CreateListPage = () => {
               type="text"
               value={listName}
               onChange={(e) => setListName(e.target.value)}
-              required
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Created At:
-            <input
-              type="date"
-              value={createdAt}
-              onChange={(e) => setCreatedAt(e.target.value)}
               required
             />
           </label>
@@ -135,15 +117,6 @@ const CreateListPage = () => {
                   </li>
                 ))}
               </ul>
-            </label>
-            <label>
-              Quantity:
-              <input
-                type="number"
-                value={item.quantity}
-                onChange={(event) => handleItemQuantityChange(index, event)}
-                required
-              />
             </label>
           </div>
         ))}

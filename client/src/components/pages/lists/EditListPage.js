@@ -1,81 +1,103 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 const EditListPage = () => {
-    const { id } = useParams(); // Get the list ID from the URL parameters
-    const navigate = useNavigate();
-    const [list, setList] = useState(null);
-    const [title, setTitle] = useState('');
-    const [items, setItems] = useState([]);
-    const [allItems, setAllItems] = useState([]);
-    const [itemSuggestions, setItemSuggestions] = useState([]);
+    const { id } = useParams();
+    const [list, setList] = useState({ title: '', items: [] });
+    const [itemSuggestions, setItemSuggestions] = useState([[]]);
 
-    // Fetch the list details and all items for the dropdown
     useEffect(() => {
         const fetchList = async () => {
             try {
-                const response = await axios.get(`/api/lists/${id}`);
-                setList(response.data);
-                setTitle(response.data.title);
-                setItems(response.data.items);
+                const response = await fetch(`/api/lists/${id}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                setList(data);
+                console.log('Fetched List Data:', data); 
             } catch (error) {
                 console.error('Error fetching list:', error);
             }
         };
 
-        const fetchAllItems = async () => {
-            try {
-                const response = await axios.get('/api/items');
-                setAllItems(response.data);
-            } catch (error) {
-                console.error('Error fetching items:', error);
-            }
-        };
-
         fetchList();
-        fetchAllItems();
     }, [id]);
 
-    // Handle form submission to update the list
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault(); 
+        console.log('Submitting:', list);
+    
         try {
-            await axios.put(`/api/lists/${id}`, {
-                title,
-                items,
+            const response = await fetch(`/api/lists/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: list.title, 
+                    items: list.items.map(item => ({ name: item.name })), 
+                }),
             });
-            navigate('/lists'); // Redirect to lists page after updating
+    
+            if (!response.ok) throw new Error('Network response was not ok');
         } catch (error) {
             console.error('Error updating list:', error);
         }
     };
 
-    const handleAddItem = (itemId) => {
-        if (!items.some(item => item.id === itemId)) {
-            const itemToAdd = allItems.find(item => item.id === itemId);
-            if (itemToAdd) {
-                setItems([...items, itemToAdd]);
-            }
-        }
+    const handleTitleChange = (e) => {
+        setList(prevList => ({ ...prevList, title: e.target.value })); 
+        console.log('Current Title Value:', e.target.value); 
     };
 
-    const handleRemoveItem = (itemId) => {
-        setItems(items.filter(item => item.id !== itemId));
+    const handleItemNameChange = (index, value) => {
+        setList(prevList => {
+            const updatedItems = [...prevList.items];
+            updatedItems[index].name = value; 
+            return { ...prevList, items: updatedItems };
+        });
+        fetchItemSuggestions(index, value); 
     };
 
-    const handleItemSearchChange = async (query) => {
+    const fetchItemSuggestions = async (index, query) => {
         if (!query) {
-            setItemSuggestions([]);
+            setItemSuggestions(prev => {
+                const newSuggestions = [...prev];
+                newSuggestions[index] = [];
+                return newSuggestions;
+            });
             return;
         }
-        
+
         try {
-            const response = await axios.get(`/api/items/search?query=${query}`);
-            setItemSuggestions(response.data);
+            const response = await fetch(`/api/items/search?query=${query}`);
+            if (!response.ok) throw new Error('Network response was not ok');
+            const data = await response.json();
+            setItemSuggestions(prev => {
+                const newSuggestions = [...prev];
+                newSuggestions[index] = data; 
+                return newSuggestions;
+            });
         } catch (error) {
             console.error('Error fetching item suggestions:', error);
         }
+    };
+
+    const handleAddItem = () => {
+        setList(prevList => ({
+            ...prevList,
+            items: [...prevList.items, { name: '', id: null }], 
+        }));
+        setItemSuggestions(prev => [...prev, []]); 
+    };
+
+    const handleRemoveItem = (index) => {
+        setList(prevList => {
+            const updatedItems = prevList.items.filter((_, i) => i !== index);
+            return { ...prevList, items: updatedItems }; 
+        });
+        setItemSuggestions(prev => prev.filter((_, i) => i !== index)); 
     };
 
     if (!list) return <div>Loading...</div>;
@@ -89,39 +111,32 @@ const EditListPage = () => {
                     <input
                         type="text"
                         id="title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        value={list.title} 
+                        onChange={handleTitleChange} 
                         required
                     />
                 </div>
-                <div>
-                    <h3>Items:</h3>
-                    <input
-                        type="text"
-                        placeholder="Search items..."
-                        onChange={(e) => handleItemSearchChange(e.target.value)}
-                    />
-                    <ul>
-                        {itemSuggestions.map(item => (
-                            <li key={item.id}>
-                                {item.name}
-                                <button type="button" onClick={() => handleAddItem(item.id)}>
-                                    Add
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                    <ul>
-                        {items.map(item => (
-                            <li key={item.id}>
-                                {item.name}
-                                <button type="button" onClick={() => handleRemoveItem(item.id)}>
-                                    Remove
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                <h3>Items:</h3>
+                {list.items.map((item, index) => (
+                    <div key={index}>
+                        <Autocomplete
+                            freeSolo
+                            options={itemSuggestions[index]?.map(option => option.name) || []}
+                            value={item.name}
+                            onChange={(event, newValue) => handleItemNameChange(index, newValue)}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Item Name"
+                                    required
+                                    onChange={(event) => handleItemNameChange(index, event.target.value)}
+                                />
+                            )}
+                        />
+                        <button type="button" onClick={() => handleRemoveItem(index)}>Remove</button>
+                    </div>
+                ))}
+                <button type="button" onClick={handleAddItem}>Add Item</button>
                 <button type="submit">Update List</button>
             </form>
         </div>

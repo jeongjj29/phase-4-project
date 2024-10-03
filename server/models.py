@@ -41,22 +41,6 @@ class Item(db.Model, SerializerMixin):
             'size': self.size
         }
 
-    @classmethod
-    def create(cls, name, image_url, count, group, form, department, size, category):
-        new_item = cls(
-            name=name,
-            image_url=image_url,
-            group=group,
-            form=form,
-            count=count,
-            department=department,
-            size=size,
-            category=category
-        )
-        db.session.add(new_item)
-        db.session.commit()
-        return new_item
-
 class Store(db.Model, SerializerMixin):
     __tablename__ = "stores"
 
@@ -106,61 +90,6 @@ class ItemPrice(db.Model, SerializerMixin):
             "store_name": self.store.name,
             "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
         }
-
-    @classmethod
-    def get_all_item_prices(cls):
-        item_prices = cls.query.order_by(cls.created_at.desc()).all()
-        return [
-            {
-                "id": ip.id,
-                "price": ip.price,
-                "created_at": ip.created_at.isoformat(),
-                "updated_at": ip.updated_at.isoformat(),
-                "store": {"id": ip.store.id, "name": ip.store.name},
-                "item": {"id": ip.item.id, "name": ip.item.name},
-            }
-            for ip in item_prices
-        ]
-
-    @classmethod
-    def get_item_price_with_details(cls, store_name, date):
-        item_prices = (
-            cls.query.join(Store)
-            .filter(
-                and_(
-                    Store.name == store_name,
-                    func.date(cls.created_at) == date,
-                )
-            )
-            .order_by(cls.created_at.desc())
-            .all()
-        )
-
-        return [
-            {
-                "id": ip.id,
-                "price": ip.price,
-                "created_at": ip.created_at.isoformat(),
-                "store": {"id": ip.store.id, "name": ip.store.name},
-                "item": {"id": ip.item.id, "name": ip.item.name},
-            }
-            for ip in item_prices
-        ]
-
-    @classmethod
-    def get_item_prices_by_item_id(cls, item_id):
-        item_prices = (
-            cls.query.filter_by(item_id=item_id).order_by(cls.created_at.desc()).all()
-        )
-        return [
-            {
-                "id": ip.id,
-                "price": ip.price,
-                "created_at": ip.created_at.strftime("%m/%d/%Y"),
-                "store": {"id": ip.store.id, "name": ip.store.name},
-            }
-            for ip in item_prices
-        ]
     
 class List(db.Model, SerializerMixin):
     __tablename__ = 'lists'
@@ -206,9 +135,9 @@ class Order(db.Model, SerializerMixin):
             "item_prices": [item_price.to_dict() for item_price in self.item_prices]
         }
 
-    @classmethod
-    def create(cls):
-        new_order = cls()
-        db.session.add(new_order)
-        db.session.commit()
-        return new_order
+    # @classmethod
+    # def create(cls):
+    #     new_order = cls()
+    #     db.session.add(new_order)
+    #     db.session.commit()
+    #     return new_order

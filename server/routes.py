@@ -81,7 +81,6 @@ def get_top5_stores():
     return make_response(top5_stores_dict)
 
 
-# Item Routes
 @api_bp.route("/api/items", methods=["GET", "POST"])
 def handle_items():
     if request.method == "GET":
@@ -90,7 +89,11 @@ def handle_items():
 
     elif request.method == "POST":
         data = request.get_json()
-        new_item = Item.create(
+
+        if not data.get("name") or len(data["name"]) < 3:
+            return make_response({"error": "Item name must be at least 3 characters long"}, 400)
+
+        new_item = Item(
             name=data.get("name"),
             image_url=data.get("image_url"),
             group=data.get("group"),
@@ -100,6 +103,9 @@ def handle_items():
             size=data.get("size"),
             category=data.get("category"),
         )
+
+        db.session.add(new_item)
+        db.session.commit()
         return make_response(new_item.to_dict(), 201)
 
 
@@ -146,12 +152,22 @@ def get_top5_items():
     return make_response(top5_items_dict)
 
 
-# Purchase Routes
 @api_bp.route("/api/purchases", methods=["GET", "POST", "OPTIONS"])
 def handle_purchases():
     if request.method == "GET":
-        item_prices = ItemPrice.get_all_item_prices()
-        return make_response(item_prices)
+        item_prices = ItemPrice.query.order_by(ItemPrice.created_at.desc()).all()
+        result = [
+            {
+                "id": ip.id,
+                "price": ip.price,
+                "created_at": ip.created_at.isoformat(),
+                "updated_at": ip.updated_at.isoformat(),
+                "store": {"id": ip.store.id, "name": ip.store.name},
+                "item": {"id": ip.item.id, "name": ip.item.name},
+            }
+            for ip in item_prices
+        ]
+        return make_response(result)
 
     elif request.method == "POST":
         data = request.get_json()
@@ -170,7 +186,6 @@ def handle_purchases():
 
     elif request.method == "OPTIONS":
         return make_response({"status": "OK"}, 200)
-
 
 @api_bp.route("/api/purchases/<int:id>", methods=["GET", "PUT", "DELETE"])
 def handle_purchase(id):
@@ -224,13 +239,6 @@ def get_most_recent_item_prices():
 
     return make_response(recent_item_prices_dict)
 
-
-@api_bp.route("/api/purchases/item/<int:item_id>", methods=["GET"])
-def get_purchases_by_item(item_id):
-    item_prices = ItemPrice.get_item_prices_by_item_id(item_id)
-    return make_response(item_prices)
-
-
 @api_bp.route("/api/stores/<int:id>/items", methods=["GET"])
 def get_store_items(id):
     store = Store.query.get_or_404(id)
@@ -247,7 +255,6 @@ def get_store_purchases(id):
         ]
     )
 
-
 @api_bp.route("/api/items/<int:id>/stores", methods=["GET"])
 def get_item_stores(id):
     item = Item.query.get_or_404(id)
@@ -263,27 +270,60 @@ def get_all_lists():
 @api_bp.route("/api/lists", methods=["POST"])
 def create_list():
     data = request.get_json()
-    title = data.get("title")
-    item_ids = data.get("items")
+    title = data.get("name")
+    item_names = data.get("items")
 
     new_list = List(title=title)
 
-    for item_id in item_ids:
-        item = Item.query.get(item_id)
-        if item:
-            new_list.items.append(item)
+    for item_name in item_names:
+        item = Item.query.filter_by(name=item_name).first()
+        if not item:
+            item = Item(name=item_name, count=0, category='Default', group='Default', form='Default', department='Default')
+            db.session.add(item)
+        new_list.items.append(item)
 
     db.session.add(new_list)
-    db.session.commit()
+    db.session.commit() 
 
     return make_response(new_list.to_dict()), 201
 
 
-@api_bp.route("/api/lists/<int:id>", methods=["GET"])
-def get_list(id):
+
+@api_bp.route("/api/lists/<int:id>", methods=["GET", "PUT"])
+def handle_list(id):
     lst = List.query.get_or_404(id)
 
-    return make_response(lst.to_dict_with_items())
+    if request.method == "GET":
+        return make_response(lst.to_dict_with_items())
+
+    elif request.method == "PUT":
+        data = request.get_json()
+
+        lst.title = data.get("title", lst.title)
+
+        item_names = data.get("items", [])
+        lst.items.clear()
+
+        for item_data in item_names:
+            item_name = item_data['name']
+            item = Item.query.filter_by(name=item_name).first()
+            if not item:
+                item = Item(
+                    name=item_name,
+                    count=0,
+                    category='Default',
+                    group='Default',
+                    form='Default',
+                    department='Default'
+                )
+                db.session.add(item)
+            
+            lst.items.append(item)
+
+        db.session.commit()
+
+        return make_response(lst.to_dict_with_items()), 200
+
 
 
 @api_bp.route("/api/orders", methods=["POST"])
@@ -309,7 +349,7 @@ def create_order():
         db.session.add(store)
         db.session.commit()
 
-    new_order = Order(created_at=created_at, store_id=store.id)  # Set store_id here
+    new_order = Order(created_at=created_at, store_id=store.id)
 
     for item in items:
         item_name = item.get("itemName")
@@ -437,7 +477,28 @@ def search_stores():
 
     return make_response([store.to_dict() for store in stores])
 
+@api_bp.route("/api/purchases/item/<int:item_id>", methods=["GET"])
+def get_item_prices_by_item_id(item_id):
+    item_prices = (
+        db.session.query(ItemPrice)
+        .filter(ItemPrice.item_id == item_id)
+        .all()
+    )
 
+    result = [
+        {
+            "id": item_price.id,
+            "price": item_price.price,
+            "store": {
+                "id": item_price.store.id,
+                "name": item_price.store.name
+            },
+            "created_at": item_price.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+        for item_price in item_prices
+    ]
+
+    return make_response(result), 200
 from config import app
 
 app.register_blueprint(api_bp)
