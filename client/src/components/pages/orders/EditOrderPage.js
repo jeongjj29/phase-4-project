@@ -5,8 +5,8 @@ import TextField from '@mui/material/TextField';
 
 const EditOrdersPage = () => {
   const [order, setOrder] = useState(null);
-  const [createdAt, setCreatedAt] = useState('');  // For the date field
-  const [store, setStore] = useState('');  // For the store field
+  const [createdAt, setCreatedAt] = useState('');  
+  const [store, setStore] = useState('');  
   const [storeSuggestions, setStoreSuggestions] = useState([]);
   const [items, setItems] = useState([]);
   const [itemSuggestions, setItemSuggestions] = useState([[]]);
@@ -98,31 +98,37 @@ const EditOrdersPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // Ensure the updatedOrder includes the correct store name
     const updatedOrder = {
-      created_at: createdAt,
-      store_name: store,
-      item_prices: items,
+        created_at: createdAt,
+        store_name: store.trim(), // Trim in case of whitespace
+        item_prices: items.map(item => ({
+            item_name: item.item_name,
+            price: parseFloat(item.price) // Ensure price is a float
+        })),
     };
 
     try {
-      const response = await fetch(`/api/orders/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedOrder),
-      });
+        const response = await fetch(`/api/orders/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedOrder),
+        });
 
-      if (response.ok) {
-        navigate('/orders');
-      } else {
-        const errorData = await response.json();
-        console.error('Failed to update order:', errorData);
-      }
+        if (response.ok) {
+            navigate('/orders');
+        } else {
+            const errorData = await response.json();
+            console.error('Failed to update order:', errorData);
+        }
     } catch (error) {
-      console.error('Error updating order:', error);
+        console.error('Error updating order:', error);
     }
-  };
+};
+
+  
 
   if (!order) {
     return <div>Loading...</div>;
@@ -137,7 +143,7 @@ const EditOrdersPage = () => {
             Created At:
             <input
               type="date"
-              value={createdAt}  // This is controlled by the state
+              value={createdAt}  
               onChange={(e) => setCreatedAt(e.target.value)}
               required
             />
@@ -149,7 +155,7 @@ const EditOrdersPage = () => {
             <Autocomplete
               freeSolo
               options={storeSuggestions.map((option) => option.name)}
-              value={store}  // Controlled input with initial value
+              value={store}  
               onChange={handleStoreChange}
               renderInput={(params) => (
                 <TextField

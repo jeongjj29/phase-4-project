@@ -25,22 +25,30 @@ const OrderDetailsPage = () => {
         <div>
           <h1>Order Details</h1>
           <Link to={`/orders/${id}/edit`} className="btn">
-        Edit
-      </Link>
-          <p>ID: {order.id}</p>
-          <p>Created At: {new Date(order.created_at).toLocaleString()}</p>
+            Edit
+          </Link>
+          <p>Date: {new Date(order.created_at).toLocaleString()}</p>
+          <p>Store: {order.store_name || 'N/A'}</p> {/* Show store_name here */}
           <h2>Item Prices</h2>
           {order.item_prices && order.item_prices.length > 0 ? (
-            <ul>
-              {order.item_prices.map(itemPrice => (
-                <li key={itemPrice.id}>
-                  <p>Item ID: {itemPrice.item_id}</p>
-                  <p>Price: ${itemPrice.price}</p>
-                  <p>Store: {itemPrice.store?.name || 'N/A'}</p>
-                  <p>Created At: {new Date(itemPrice.created_at).toLocaleString()}</p>
-                </li>
-              ))}
-            </ul>
+            <table>
+              <thead>
+                <tr>
+                  <th>Item Name</th>
+                  <th>Price</th>
+                  <th>Created At</th>
+                </tr>
+              </thead>
+              <tbody>
+                {order.item_prices.map(itemPrice => (
+                  <tr key={itemPrice.id}>
+                    <td>{itemPrice.item_name}</td> {/* Show item name if needed */}
+                    <td>${itemPrice.price}</td>
+                    <td>{new Date(itemPrice.created_at).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           ) : (
             <p>No item prices found for this order.</p>
           )}

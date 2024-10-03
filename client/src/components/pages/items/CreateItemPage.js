@@ -1,6 +1,7 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
 
 const ItemSchema = Yup.object().shape({
   name: Yup.string()
@@ -12,6 +13,8 @@ const ItemSchema = Yup.object().shape({
 });
 
 const CreateItemPage = () => {
+  const navigate = useNavigate(); // Get the navigate function
+
   return (
     <div>
       <h2>Create a New Item</h2>
@@ -35,16 +38,22 @@ const CreateItemPage = () => {
             },
             body: JSON.stringify(values),
           })
-            .then((response) => response.json())
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
             .then((data) => {
               console.log("Item created:", data);
+              navigate(`/items/${data.id}`); // Navigate to the newly created item page
             })
             .catch((error) => {
               console.error("There was an error creating the item!", error);
             });
         }}
       >
-        {({ values }) => (
+        {() => (
           <Form>
             <div>
               <label htmlFor="name">Item Name</label>

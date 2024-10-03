@@ -416,18 +416,31 @@ def handle_order(id):
     elif request.method == "PUT":
         data = request.get_json()
 
-        order.created_at = data.get("created_at", order.created_at)
+        # Convert created_at string to datetime object
+        created_at_str = data.get("created_at")
+        if created_at_str:
+            order.created_at = datetime.strptime(created_at_str, '%Y-%m-%d')
 
         store_name = data.get("store_name")
         if store_name:
+            # Attempt to find the store
             store = Store.query.filter_by(name=store_name).first()
             if not store:
+                # Create the store if it doesn't exist
                 store = Store(name=store_name)
-                db.session.add(store)
-                db.session.commit()
-            order.store_id = store.id
+                db.session.add(store)  # Add the new store to the session
+                try:
+                    db.session.commit()  # Commit to save the new store
+                except Exception as e:
+                    db.session.rollback()  # Rollback in case of error
+                    print(f"Error creating store: {e}")  # Log the error
+                    return make_response({"error": "Failed to create store."}, 500)
+
+            order.store_id = store.id  # Set the store_id for the order
 
         item_prices_data = data.get("item_prices", [])
+        # Clear existing item prices first (if you want to replace them)
+        order.item_prices.clear()
         for item_data in item_prices_data:
             item_name = item_data.get("item_name")
             price = item_data.get("price")
@@ -435,6 +448,7 @@ def handle_order(id):
             if item_name and price is not None:
                 item = Item.query.filter_by(name=item_name).first()
                 if not item:
+                    # Create a new item if it doesn't exist
                     item = Item.create(
                         name=item_name, 
                         image_url=None, 
@@ -455,6 +469,7 @@ def handle_order(id):
 
         db.session.commit()
         return make_response(order.to_dict_with_items(), 200)
+
 
 
 @api_bp.route("/api/items/search", methods=["GET"])

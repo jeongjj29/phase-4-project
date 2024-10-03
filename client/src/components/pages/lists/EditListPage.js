@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 
 const EditListPage = () => {
     const { id } = useParams();
+    const navigate = useNavigate(); // Initialize useNavigate
     const [list, setList] = useState({ title: '', items: [] });
     const [itemSuggestions, setItemSuggestions] = useState([[]]);
 
@@ -39,8 +40,11 @@ const EditListPage = () => {
                     items: list.items.map(item => ({ name: item.name })), 
                 }),
             });
-    
+
             if (!response.ok) throw new Error('Network response was not ok');
+
+            // Navigate to the updated list's details page
+            navigate(`/lists/${id}`);
         } catch (error) {
             console.error('Error updating list:', error);
         }

@@ -47,21 +47,15 @@ class Store(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
 
-    item_prices = db.relationship(
-        "ItemPrice", back_populates="store", cascade="all, delete"
-    )
+    item_prices = db.relationship("ItemPrice", back_populates="store", cascade="all, delete")
     items = association_proxy("item_prices", "item")
-
-    serialize_rules = ("-item_prices.item",)
-
-    def __repr__(self):
-        return f"<Store {self.name}>"
 
     def to_dict(self):
         return {
             'id': self.id,
             'name': self.name
         }
+
 
 class ItemPrice(db.Model, SerializerMixin):
     __tablename__ = "item_prices"
@@ -127,13 +121,17 @@ class Order(db.Model, SerializerMixin):
     store_id = Column(Integer, db.ForeignKey("stores.id"), nullable=True)
 
     item_prices = db.relationship("ItemPrice", back_populates="order", cascade="all, delete")
+    store = db.relationship("Store")  # Just link the store, no back_populates needed
 
     def to_dict_with_items(self):
         return {
             "id": self.id,
             "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "store_name": self.store.name if self.store else None,  # Add store_name to the response
             "item_prices": [item_price.to_dict() for item_price in self.item_prices]
         }
+
+
 
     # @classmethod
     # def create(cls):
