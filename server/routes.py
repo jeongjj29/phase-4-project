@@ -363,13 +363,58 @@ def handle_orders():
     return make_response(order_details)
 
 
-@api_bp.route("/api/orders/<int:id>", methods=["GET"])
-def get_order(id):
+@api_bp.route("/api/orders/<int:id>", methods=["GET", "PUT"])
+def handle_order(id):
     order = Order.query.get_or_404(id)
-    item_prices = [item_price.to_dict() for item_price in order.item_prices]
-    order_dict = order.to_dict()
-    order_dict["item_prices"] = item_prices
-    return make_response(order_dict)
+
+    if request.method == "GET":
+        item_prices = [item_price.to_dict() for item_price in order.item_prices]
+        order_dict = order.to_dict_with_items()
+        order_dict["item_prices"] = item_prices
+        return make_response(order_dict, 200)
+
+    elif request.method == "PUT":
+        data = request.get_json()
+
+        order.created_at = data.get("created_at", order.created_at)
+
+        store_name = data.get("store_name")
+        if store_name:
+            store = Store.query.filter_by(name=store_name).first()
+            if not store:
+                store = Store(name=store_name)
+                db.session.add(store)
+                db.session.commit()
+            order.store_id = store.id
+
+        item_prices_data = data.get("item_prices", [])
+        for item_data in item_prices_data:
+            item_name = item_data.get("item_name")
+            price = item_data.get("price")
+
+            if item_name and price is not None:
+                item = Item.query.filter_by(name=item_name).first()
+                if not item:
+                    item = Item.create(
+                        name=item_name, 
+                        image_url=None, 
+                        count=0, 
+                        group='', 
+                        form='', 
+                        department='', 
+                        size=None, 
+                        category=None
+                    )
+                item_price = ItemPrice(
+                    item_id=item.id, 
+                    price=price, 
+                    store_id=order.store_id,
+                    order_id=order.id
+                )
+                db.session.add(item_price)
+
+        db.session.commit()
+        return make_response(order.to_dict_with_items(), 200)
 
 
 @api_bp.route("/api/items/search", methods=["GET"])

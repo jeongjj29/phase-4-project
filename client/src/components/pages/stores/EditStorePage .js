@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const StoreSchema = Yup.object().shape({
   name: Yup.string()
@@ -13,6 +13,8 @@ const StoreSchema = Yup.object().shape({
 const EditStorePage = () => {
   const { id } = useParams();
   const [store, setStore] = React.useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -26,11 +28,14 @@ const EditStorePage = () => {
       .put(`/api/stores/${id}`, values)
       .then((response) => {
         console.log("Store updated:", response.data);
+        navigate(`/stores/${id}`);
       })
       .catch((error) => {
         console.error("Error updating store:", error);
+        alert("Failed to update store. Please try again.");
       });
   };
+  
 
   const handleClick = () => {
     fetch(`/api/stores/${id}`, {
